@@ -16,10 +16,9 @@ const LinkContainerVariants = {
   },
   close: {
     y: -300,
-    opacity: 0.8,
+    opacity: 0.2,
     transition: {
       when: "after",
-      delayChildren: 0.2,
       staggerChildren: 0.2,
       staggerDirection: -1,
     },
@@ -43,7 +42,7 @@ const Sidebar = () => {
   const [showOptions, setShowOptions] = useState(false);
   return (
     <div
-      className={`fixed top-0 left-0 h-[55vh] w-[200px] overflow-hidden flex justify-center items-center rounded-md`}
+      className={`fixed top-0 left-0 h-[70vh] sm:h-[60vh] w-[200px] overflow-hidden flex justify-center items-center rounded-md z-[999]`}
     >
       {/* <div
         className={`absolute top-[32px] left-[12px] w-10 h-10 bg-slate-600 rounded-full`}
@@ -57,7 +56,9 @@ const Sidebar = () => {
       >
         {LinksData.map((link) => (
           <motion.div key={link.text} variants={LinkVariants}>
-            <Link to={link.path}>{link.text}</Link>
+            <a href={link.path} className="nav-link-hover text-white/95">
+              {link.text}
+            </a>
           </motion.div>
         ))}
       </motion.section>

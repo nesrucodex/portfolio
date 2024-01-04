@@ -25,4 +25,15 @@ body {
     height: 100vh;
     scroll-snap-align: center;
   }
+
+  .nav-link-hover {
+    transition: all 0.3s ease-out;
+  }
+
+  .nav-link-hover:hover {
+    margin-left: 4px;
+  }
+  .nav-link-hover:active {
+    margin-left: 2px;
+  }
 }
