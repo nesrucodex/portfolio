@@ -1,0 +1,595 @@
+"use client"
+
+import type React from "react"
+
+import { motion } from "framer-motion"
+import { Button } from "@/components/ui/button"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import Image from "next/image"
+import Link from "next/link"
+import { useInView } from "framer-motion"
+import { useEffect, useRef, useState } from "react"
+import { ArrowRight, ArrowLeft, ExternalLink, Github, Maximize2 } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+
+const projects = [
+  {
+    id: 1,
+    title: "E-Commerce Platform",
+    description: "A full-featured online store with cart, checkout, and payment integration.",
+    image: "/placeholder.svg?height=400&width=600",
+    color: "#FF6B6B",
+    techStack: ["React", "Node.js", "MongoDB", "Stripe"],
+    link: "#",
+    github: "https://github.com/nesrucodex/ecommerce-platform",
+    longDescription:
+      "A comprehensive e-commerce solution built with React and Node.js. Features include product catalog, user authentication, shopping cart, checkout process, payment integration with Stripe, order management, and admin dashboard for inventory control.",
+    features: [
+      "User authentication and profiles",
+      "Product search and filtering",
+      "Shopping cart and wishlist",
+      "Secure checkout with Stripe",
+      "Order tracking and history",
+      "Admin dashboard for inventory management",
+    ],
+  },
+  {
+    id: 2,
+    title: "Task Management App",
+    description: "A collaborative task management tool with real-time updates and team features.",
+    image: "/placeholder.svg?height=400&width=600",
+    color: "#4ECDC4",
+    techStack: ["Next.js", "TypeScript", "Prisma", "PostgreSQL"],
+    link: "#",
+    github: "https://github.com/nesrucodex/task-manager",
+    longDescription:
+      "A collaborative task management application built with Next.js and TypeScript. The app allows teams to create, assign, and track tasks in real-time. It features a clean, intuitive interface with drag-and-drop functionality and integrates with various productivity tools.",
+    features: [
+      "Real-time updates with WebSockets",
+      "Task assignment and deadline tracking",
+      "Project and team management",
+      "File attachments and comments",
+      "Calendar integration",
+      "Performance analytics dashboard",
+    ],
+  },
+  {
+    id: 3,
+    title: "Social Media Dashboard",
+    description: "Analytics dashboard for social media performance with data visualization.",
+    image: "/placeholder.svg?height=400&width=600",
+    color: "#FFD166",
+    techStack: ["Vue.js", "Express", "D3.js", "Firebase"],
+    link: "#",
+    github: "https://github.com/nesrucodex/social-dashboard",
+    longDescription:
+      "A comprehensive social media analytics dashboard built with Vue.js and D3.js. The application aggregates data from multiple social platforms and presents it through interactive charts and visualizations, helping users understand their social media performance at a glance.",
+    features: [
+      "Multi-platform data aggregation",
+      "Interactive data visualizations",
+      "Customizable reporting",
+      "Audience demographics analysis",
+      "Content performance metrics",
+      "Scheduled exports and notifications",
+    ],
+  },
+  {
+    id: 4,
+    title: "AI Content Generator",
+    description: "An AI-powered application for generating marketing content and copy.",
+    image: "/placeholder.svg?height=400&width=600",
+    color: "#06D6A0",
+    techStack: ["React", "Python", "TensorFlow", "FastAPI"],
+    link: "#",
+    github: "https://github.com/nesrucodex/ai-content-generator",
+    longDescription:
+      "An innovative content generation tool powered by AI. This application uses advanced natural language processing to help marketers and content creators generate high-quality copy for various purposes. The frontend is built with React, while the backend uses Python with FastAPI and TensorFlow for the AI models.",
+    features: [
+      "Blog post and article generation",
+      "Social media caption creation",
+      "Email marketing copy",
+      "SEO-optimized content",
+      "Tone and style customization",
+      "Content performance prediction",
+    ],
+  },
+  {
+    id: 5,
+    title: "Fitness Tracking App",
+    description: "A mobile-first application for tracking workouts and nutrition.",
+    image: "/placeholder.svg?height=400&width=600",
+    color: "#118AB2",
+    techStack: ["React Native", "GraphQL", "Node.js", "MongoDB"],
+    link: "#",
+    github: "https://github.com/nesrucodex/fitness-tracker",
+    longDescription:
+      "A comprehensive fitness and nutrition tracking application built with React Native. The app allows users to log workouts, track nutrition, set goals, and visualize progress over time. It features integration with wearable devices and provides personalized recommendations based on user data.",
+    features: [
+      "Workout planning and tracking",
+      "Nutrition logging and analysis",
+      "Progress visualization",
+      "Goal setting and achievements",
+      "Wearable device integration",
+      "Community challenges and sharing",
+    ],
+  },
+]
+
+export default function Projects() {
+  const ref = useRef(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const isInView = useInView(ref, { once: true, amount: 0.2 })
+  const [currentIndex, setCurrentIndex] = useState(0)
+  const [selectedProject, setSelectedProject] = useState<(typeof projects)[0] | null>(null)
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const [isDragging, setIsDragging] = useState(false)
+  const [startX, setStartX] = useState(0)
+  const [scrollLeft, setScrollLeft] = useState(0)
+  const [autoScrollEnabled, setAutoScrollEnabled] = useState(true)
+
+  // Handle auto-scrolling
+  useEffect(() => {
+    if (!autoScrollEnabled) return
+
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % projects.length)
+    }, 5000)
+
+    return () => clearInterval(interval)
+  }, [autoScrollEnabled])
+
+  // Scroll to the current project when currentIndex changes
+  useEffect(() => {
+    if (containerRef.current) {
+      const scrollAmount = currentIndex * (window.innerWidth * 0.8)
+      containerRef.current.scrollTo({
+        left: scrollAmount,
+        behavior: "smooth",
+      })
+    }
+  }, [currentIndex])
+
+  const navigateToProject = (index: number) => {
+    // Ensure the index is within bounds
+    const newIndex = (index + projects.length) % projects.length
+    setCurrentIndex(newIndex)
+    setAutoScrollEnabled(false)
+
+    // Re-enable auto-scroll after 10 seconds of inactivity
+    setTimeout(() => {
+      setAutoScrollEnabled(true)
+    }, 10000)
+  }
+
+  const openProjectDetails = (project: (typeof projects)[0]) => {
+    setSelectedProject(project)
+    setDialogOpen(true)
+    setAutoScrollEnabled(false)
+  }
+
+  // Mouse event handlers for custom dragging
+  const handleMouseDown = (e: React.MouseEvent) => {
+    setIsDragging(true)
+    setStartX(e.pageX - containerRef.current!.offsetLeft)
+    setScrollLeft(containerRef.current!.scrollLeft)
+    setAutoScrollEnabled(false)
+  }
+
+  const handleMouseUp = () => {
+    setIsDragging(false)
+
+    // Determine which project is most visible and snap to it
+    if (containerRef.current) {
+      const scrollPosition = containerRef.current.scrollLeft
+      const itemWidth = window.innerWidth * 0.8
+      const newIndex = Math.round(scrollPosition / itemWidth)
+      setCurrentIndex(Math.min(newIndex, projects.length - 1))
+    }
+
+    // Re-enable auto-scroll after 10 seconds of inactivity
+    setTimeout(() => {
+      setAutoScrollEnabled(true)
+    }, 10000)
+  }
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging) return
+    e.preventDefault()
+
+    const x = e.pageX - containerRef.current!.offsetLeft
+    const walk = (x - startX) * 2 // Scroll speed multiplier
+    containerRef.current!.scrollLeft = scrollLeft - walk
+  }
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setIsDragging(true)
+    setStartX(e.touches[0].pageX - containerRef.current!.offsetLeft)
+    setScrollLeft(containerRef.current!.scrollLeft)
+    setAutoScrollEnabled(false)
+  }
+
+  const handleTouchEnd = () => {
+    setIsDragging(false)
+
+    // Determine which project is most visible and snap to it
+    if (containerRef.current) {
+      const scrollPosition = containerRef.current.scrollLeft
+      const itemWidth = window.innerWidth * 0.8
+      const newIndex = Math.round(scrollPosition / itemWidth)
+      setCurrentIndex(Math.min(newIndex, projects.length - 1))
+    }
+
+    // Re-enable auto-scroll after 10 seconds of inactivity
+    setTimeout(() => {
+      setAutoScrollEnabled(true)
+    }, 10000)
+  }
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isDragging) return
+
+    const x = e.touches[0].pageX - containerRef.current!.offsetLeft
+    const walk = (x - startX) * 2
+    containerRef.current!.scrollLeft = scrollLeft - walk
+  }
+
+  return (
+    <section id="projects" className="py-20 relative overflow-hidden">
+      {/* Background elements */}
+      <div className="absolute inset-0 -z-10 overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-full bg-grid-pattern opacity-5"></div>
+        {projects.map((project, idx) => (
+          <motion.div
+            key={`bg-${project.id}`}
+            className="absolute rounded-full blur-3xl opacity-10"
+            style={{
+              backgroundColor: project.color,
+              width: "30vw",
+              height: "30vw",
+              top: `${(idx * 20) % 80}%`,
+              left: `${(idx * 25) % 90}%`,
+              zIndex: -1,
+            }}
+            animate={{
+              x: [0, 50, 0, -50, 0],
+              y: [0, -30, 50, 30, 0],
+            }}
+            transition={{
+              duration: 20 + idx * 5,
+              repeat: Number.POSITIVE_INFINITY,
+              repeatType: "reverse",
+              ease: "easeInOut",
+            }}
+          />
+        ))}
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 md:px-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.5 }}
+          className="text-center mb-16"
+          ref={ref}
+        >
+          <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-500">
+            Featured Projects
+          </h2>
+          <p className="text-muted-foreground max-w-2xl mx-auto">
+            A selection of my recent work. Each project represents a unique challenge and solution.
+          </p>
+        </motion.div>
+
+        {/* Navigation Arrows */}
+        <div className="relative z-10 mb-8 flex justify-between items-center">
+          <button
+            onClick={() => navigateToProject(currentIndex - 1)}
+            className="group flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors duration-300"
+            aria-label="Previous project"
+          >
+            <div className="w-10 h-10 rounded-full border border-muted-foreground/30 flex items-center justify-center group-hover:border-primary group-hover:bg-primary/10 transition-all duration-300">
+              <ArrowLeft className="h-5 w-5 group-hover:scale-110 transition-transform duration-300" />
+            </div>
+            <span className="hidden md:block">Previous</span>
+          </button>
+
+          {/* Pagination Indicators */}
+          <div className="flex gap-2">
+            {projects.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => navigateToProject(index)}
+                className="group"
+                aria-label={`Go to project ${index + 1}`}
+              >
+                <div
+                  className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                    index === currentIndex
+                      ? "bg-primary scale-125"
+                      : "bg-muted-foreground/30 group-hover:bg-muted-foreground/50"
+                  }`}
+                />
+              </button>
+            ))}
+          </div>
+
+          <button
+            onClick={() => navigateToProject(currentIndex + 1)}
+            className="group flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors duration-300"
+            aria-label="Next project"
+          >
+            <span className="hidden md:block">Next</span>
+            <div className="w-10 h-10 rounded-full border border-muted-foreground/30 flex items-center justify-center group-hover:border-primary group-hover:bg-primary/10 transition-all duration-300">
+              <ArrowRight className="h-5 w-5 group-hover:scale-110 transition-transform duration-300" />
+            </div>
+          </button>
+        </div>
+
+        {/* Project Showcase - Horizontal Scroll */}
+        <div
+          className="relative overflow-hidden"
+          style={{
+            perspective: "1000px",
+            transformStyle: "preserve-3d",
+          }}
+        >
+          <div
+            ref={containerRef}
+            className="flex overflow-x-scroll snap-x snap-mandatory hide-scrollbar"
+            style={{
+              scrollbarWidth: "none",
+              msOverflowStyle: "none",
+            }}
+            onMouseDown={handleMouseDown}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseUp}
+            onMouseMove={handleMouseMove}
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+            onTouchMove={handleTouchMove}
+          >
+            {projects.map((project, index) => (
+              <div key={project.id} className="min-w-[80vw] px-4 snap-center">
+                <motion.div
+                  initial={{ opacity: 0, rotateY: 25, scale: 0.9 }}
+                  animate={{
+                    opacity: isInView ? 1 : 0,
+                    rotateY: isInView ? 0 : 25,
+                    scale: isInView ? 1 : 0.9,
+                  }}
+                  transition={{
+                    duration: 0.8,
+                    delay: index * 0.1,
+                    type: "spring",
+                    stiffness: 100,
+                  }}
+                  className="h-full"
+                >
+                  <div
+                    className="relative overflow-hidden rounded-2xl border shadow-lg h-[600px] md:h-[500px] group"
+                    style={{
+                      background: `linear-gradient(135deg, ${project.color}20, transparent)`,
+                      borderColor: `${project.color}40`,
+                    }}
+                  >
+                    {/* Project Image with Overlay */}
+                    <div className="absolute inset-0 w-full h-full">
+                      <div className="relative h-full w-full overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/95 z-10" />
+                        <Image
+                          src={project.image || "/placeholder.svg"}
+                          alt={project.title}
+                          fill
+                          className="object-cover opacity-60 group-hover:scale-105 group-hover:opacity-75 transition-all duration-700"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Content */}
+                    <div className="relative z-20 flex flex-col h-full p-6 md:p-8">
+                      {/* Project Number */}
+                      <div
+                        className="text-8xl font-bold opacity-10 absolute top-0 right-4"
+                        style={{ color: project.color }}
+                      >
+                        {(index + 1).toString().padStart(2, "0")}
+                      </div>
+
+                      {/* Project Info */}
+                      <div className="mt-auto">
+                        <div
+                          className="inline-block px-3 py-1 rounded-full text-xs font-medium mb-4"
+                          style={{
+                            backgroundColor: `${project.color}30`,
+                            color: project.color,
+                          }}
+                        >
+                          Featured Project
+                        </div>
+
+                        <h3 className="text-3xl md:text-4xl font-bold mb-3">{project.title}</h3>
+
+                        <p className="text-muted-foreground mb-6 max-w-lg">{project.description}</p>
+
+                        <div className="flex flex-wrap gap-2 mb-8">
+                          {project.techStack.map((tech) => (
+                            <Badge
+                              key={tech}
+                              variant="outline"
+                              className="bg-background/50 backdrop-blur-sm border-muted"
+                            >
+                              {tech}
+                            </Badge>
+                          ))}
+                        </div>
+
+                        <div className="flex flex-wrap gap-4">
+                          <Button
+                            onClick={() => openProjectDetails(project)}
+                            variant="outline"
+                            className="group bg-background/50 backdrop-blur-sm hover:bg-background"
+                          >
+                            <Maximize2 className="mr-2 h-4 w-4 group-hover:scale-110 transition-transform duration-300" />
+                            View Details
+                          </Button>
+
+                          <Link href={project.link} target="_blank" rel="noopener noreferrer">
+                            <Button
+                              style={{
+                                backgroundColor: project.color,
+                                color: "#fff",
+                              }}
+                              className="group hover:opacity-90"
+                            >
+                              <span className="group-hover:translate-x-1 transition-transform duration-300">
+                                Explore Project
+                              </span>
+                              <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
+                            </Button>
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Decorative Elements */}
+                    <div
+                      className="absolute top-8 left-8 w-20 h-20 border-t-2 border-l-2 opacity-30"
+                      style={{ borderColor: project.color }}
+                    />
+                    <div
+                      className="absolute bottom-8 right-8 w-20 h-20 border-b-2 border-r-2 opacity-30"
+                      style={{ borderColor: project.color }}
+                    />
+                  </div>
+                </motion.div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Drag Indicator */}
+        <motion.div
+          className="flex items-center justify-center mt-8 text-sm text-muted-foreground"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: isInView ? 1 : 0 }}
+          transition={{ delay: 1, duration: 0.5 }}
+        >
+          <div className="w-10 h-1 bg-muted-foreground/30 rounded-full mr-3 animate-pulse" />
+          Drag to explore projects
+          <div className="w-10 h-1 bg-muted-foreground/30 rounded-full ml-3 animate-pulse" />
+        </motion.div>
+      </div>
+
+      {/* Project Details Dialog */}
+      <Dialog
+        open={dialogOpen}
+        onOpenChange={(open) => {
+          setDialogOpen(open)
+          if (!open) {
+            setTimeout(() => {
+              setAutoScrollEnabled(true)
+            }, 1000)
+          }
+        }}
+      >
+        {selectedProject && (
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <div className="flex items-center gap-3">
+                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: selectedProject.color }} />
+                <DialogTitle className="text-2xl">{selectedProject.title}</DialogTitle>
+              </div>
+              <DialogDescription>{selectedProject.description}</DialogDescription>
+            </DialogHeader>
+
+            <div className="mt-4">
+              <div
+                className="relative h-64 w-full mb-6 rounded-lg overflow-hidden border"
+                style={{ borderColor: `${selectedProject.color}40` }}
+              >
+                <div
+                  className="absolute inset-0 bg-gradient-to-br from-transparent to-background/30 z-10"
+                  style={{ backgroundColor: `${selectedProject.color}10` }}
+                />
+                <Image
+                  src={selectedProject.image || "/placeholder.svg"}
+                  alt={selectedProject.title}
+                  fill
+                  className="object-cover"
+                />
+              </div>
+
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-lg font-semibold flex items-center gap-2">
+                    <div className="w-1 h-6 rounded-full" style={{ backgroundColor: selectedProject.color }} />
+                    Overview
+                  </h3>
+                  <p className="mt-2">{selectedProject.longDescription}</p>
+                </div>
+
+                <div>
+                  <h3 className="text-lg font-semibold flex items-center gap-2">
+                    <div className="w-1 h-6 rounded-full" style={{ backgroundColor: selectedProject.color }} />
+                    Key Features
+                  </h3>
+                  <ul className="mt-2 grid grid-cols-1 md:grid-cols-2 gap-2">
+                    {selectedProject.features.map((feature, index) => (
+                      <li key={index} className="flex items-start gap-2">
+                        <div className="w-2 h-2 rounded-full mt-2" style={{ backgroundColor: selectedProject.color }} />
+                        <span>{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div>
+                  <h3 className="text-lg font-semibold flex items-center gap-2">
+                    <div className="w-1 h-6 rounded-full" style={{ backgroundColor: selectedProject.color }} />
+                    Technologies Used
+                  </h3>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {selectedProject.techStack.map((tech) => (
+                      <Badge
+                        key={tech}
+                        variant="outline"
+                        className="px-3 py-1"
+                        style={{
+                          borderColor: `${selectedProject.color}40`,
+                          backgroundColor: `${selectedProject.color}10`,
+                        }}
+                      >
+                        {tech}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap gap-4 pt-4">
+                  <Link href={selectedProject.link} target="_blank" rel="noopener noreferrer">
+                    <Button
+                      className="flex items-center gap-2"
+                      style={{
+                        backgroundColor: selectedProject.color,
+                        color: "#fff",
+                      }}
+                    >
+                      <ExternalLink className="h-4 w-4" />
+                      Live Demo
+                    </Button>
+                  </Link>
+                  <Link href={selectedProject.github} target="_blank" rel="noopener noreferrer">
+                    <Button variant="outline" className="flex items-center gap-2">
+                      <Github className="h-4 w-4" />
+                      View Code
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </DialogContent>
+        )}
+      </Dialog>
+    </section>
+  )
+}
