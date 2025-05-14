@@ -1,237 +1,231 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { motion } from "framer-motion"
-import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import Image from "next/image"
-import Link from "next/link"
-import { useInView } from "framer-motion"
-import { useEffect, useRef, useState } from "react"
-import { ArrowRight, ArrowLeft, ExternalLink, Github, Maximize2 } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import Image from "next/image";
+import Link from "next/link";
+import { useInView } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import {
+  ArrowRight,
+  ArrowLeft,
+  ExternalLink,
+  Github,
+  Maximize2,
+} from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import ASSETS from "@/utils/assets";
 
 const projects = [
   {
     id: 1,
-    title: "E-Commerce Platform",
-    description: "A full-featured online store with cart, checkout, and payment integration.",
-    image: "/placeholder.svg?height=400&width=600",
+    title: "Endubis Wallet",
+    description:
+      "At Endubis, the Cardano Wallet project aims to simplify ADA asset management through a secure Telegram bot, making crypto accessible in Ethiopia. I helped build and deploy the backend, integrating Cardano’s API and designing commands for an intuitive user experience in Telegram.",
+    image: ASSETS.IMAGES.ENDUBIS_V2,
     color: "#FF6B6B",
-    techStack: ["React", "Node.js", "MongoDB", "Stripe"],
-    link: "#",
-    github: "https://github.com/nesrucodex/ecommerce-platform",
+    techStack: [
+      "TypeScript",
+      "Mantine",
+      "Tailwind",
+      "Next.js",
+      "Express.js",
+      "Prisma",
+      "Zod",
+    ],
+    link: "https://t.me/EndubisTestWalletBot",
+    github: "https://github.com/nesrucodex",
     longDescription:
-      "A comprehensive e-commerce solution built with React and Node.js. Features include product catalog, user authentication, shopping cart, checkout process, payment integration with Stripe, order management, and admin dashboard for inventory control.",
+      "A secure and user-friendly Cardano wallet experience integrated into Telegram, tailored for the Ethiopian market. This project enables users to manage their ADA assets, check balances, and perform transactions through a Telegram bot interface. I contributed to the backend development, implementing Cardano API integrations, Telegram command handlers, and ensuring a smooth, intuitive user experience within the chat environment.",
     features: [
-      "User authentication and profiles",
-      "Product search and filtering",
-      "Shopping cart and wishlist",
-      "Secure checkout with Stripe",
-      "Order tracking and history",
-      "Admin dashboard for inventory management",
+      "Secure ADA asset management via Telegram bot",
+      "Cardano blockchain API integration",
+      "User-friendly Telegram commands for wallet operations",
+      "Balance checking and transaction initiation",
+      "Backend built with Node.js and Express",
+      "Localized for the Ethiopian crypto community",
     ],
   },
   {
     id: 2,
-    title: "Task Management App",
-    description: "A collaborative task management tool with real-time updates and team features.",
-    image: "/placeholder.svg?height=400&width=600",
+    title: "SoundRig",
+    description:
+      "SoundRig is a music streaming platform where users can discover, share, and stream songs and albums. It offers a personalized listening experience with curated playlists and allows users to connect with artists and other music enthusiasts. The platform also supports features like offline listening and social sharing.",
+    image: ASSETS.IMAGES.SOUNDRIG,
     color: "#4ECDC4",
-    techStack: ["Next.js", "TypeScript", "Prisma", "PostgreSQL"],
-    link: "#",
-    github: "https://github.com/nesrucodex/task-manager",
+    techStack: ["TypeScript", "Mantine", "Tailwind", "Next.js"],
+    link: "soundrig-artist-app.vercel.app",
+    github: "https://github.com/nesrucodex",
     longDescription:
-      "A collaborative task management application built with Next.js and TypeScript. The app allows teams to create, assign, and track tasks in real-time. It features a clean, intuitive interface with drag-and-drop functionality and integrates with various productivity tools.",
+      "A dynamic music streaming platform built with Next.js and TypeScript, designed for seamless discovery, sharing, and streaming of songs and albums. SoundRig offers users a personalized experience through curated playlists, offline listening options, and social sharing capabilities. It fosters a community-driven environment where users can follow artists, interact with other music lovers, and share their favorite tracks. The platform prioritizes an intuitive, responsive UI and robust performance for uninterrupted music enjoyment.",
     features: [
-      "Real-time updates with WebSockets",
-      "Task assignment and deadline tracking",
-      "Project and team management",
-      "File attachments and comments",
-      "Calendar integration",
-      "Performance analytics dashboard",
+      "Personalized playlists and recommendations",
+      "Stream songs, albums, and curated mixes",
+      "Offline listening support",
+      "Artist profiles and fan interactions",
+      "Social sharing for tracks and playlists",
+      "Responsive and modern user interface",
     ],
   },
+
   {
     id: 3,
-    title: "Social Media Dashboard",
-    description: "Analytics dashboard for social media performance with data visualization.",
-    image: "/placeholder.svg?height=400&width=600",
+    title: "Shengo",
+    description:
+      "Shengo Web App is a platform that automates contracts for various transactions, such as selling, buying, renting, and more.",
+    image: ASSETS.IMAGES.SHENGO,
     color: "#FFD166",
-    techStack: ["Vue.js", "Express", "D3.js", "Firebase"],
-    link: "#",
-    github: "https://github.com/nesrucodex/social-dashboard",
+    techStack: [
+      "Typescript",
+      "Tailwind",
+      "Next.js",
+      "Prisma",
+      "Postgres",
+      "Zod",
+      "@tanstack/react-query",
+    ],
+    link: "shengo.vercel.app",
+    github: "https://github.com/nesrucodex/shengo",
     longDescription:
-      "A comprehensive social media analytics dashboard built with Vue.js and D3.js. The application aggregates data from multiple social platforms and presents it through interactive charts and visualizations, helping users understand their social media performance at a glance.",
+      "An innovative web application designed to automate contract creation and management for diverse transactions, including selling, buying, renting, and service agreements. Built with Vue.js and Express, Shengo streamlines the traditionally manual process of drafting contracts by providing customizable templates and secure digital signing capabilities. Users can easily generate, review, and manage legally binding agreements online, reducing paperwork and improving transaction efficiency.",
     features: [
-      "Multi-platform data aggregation",
-      "Interactive data visualizations",
-      "Customizable reporting",
-      "Audience demographics analysis",
-      "Content performance metrics",
-      "Scheduled exports and notifications",
+      "Automated contract generation for various transaction types",
+      "Customizable contract templates",
+      "Secure digital signing functionality",
+      "Contract history and status tracking",
+      "User authentication and role-based access",
     ],
   },
-  {
-    id: 4,
-    title: "AI Content Generator",
-    description: "An AI-powered application for generating marketing content and copy.",
-    image: "/placeholder.svg?height=400&width=600",
-    color: "#06D6A0",
-    techStack: ["React", "Python", "TensorFlow", "FastAPI"],
-    link: "#",
-    github: "https://github.com/nesrucodex/ai-content-generator",
-    longDescription:
-      "An innovative content generation tool powered by AI. This application uses advanced natural language processing to help marketers and content creators generate high-quality copy for various purposes. The frontend is built with React, while the backend uses Python with FastAPI and TensorFlow for the AI models.",
-    features: [
-      "Blog post and article generation",
-      "Social media caption creation",
-      "Email marketing copy",
-      "SEO-optimized content",
-      "Tone and style customization",
-      "Content performance prediction",
-    ],
-  },
-  {
-    id: 5,
-    title: "Fitness Tracking App",
-    description: "A mobile-first application for tracking workouts and nutrition.",
-    image: "/placeholder.svg?height=400&width=600",
-    color: "#118AB2",
-    techStack: ["React Native", "GraphQL", "Node.js", "MongoDB"],
-    link: "#",
-    github: "https://github.com/nesrucodex/fitness-tracker",
-    longDescription:
-      "A comprehensive fitness and nutrition tracking application built with React Native. The app allows users to log workouts, track nutrition, set goals, and visualize progress over time. It features integration with wearable devices and provides personalized recommendations based on user data.",
-    features: [
-      "Workout planning and tracking",
-      "Nutrition logging and analysis",
-      "Progress visualization",
-      "Goal setting and achievements",
-      "Wearable device integration",
-      "Community challenges and sharing",
-    ],
-  },
-]
+];
 
 export default function Projects() {
-  const ref = useRef(null)
-  const containerRef = useRef<HTMLDivElement>(null)
-  const isInView = useInView(ref, { once: true, amount: 0.2 })
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const [selectedProject, setSelectedProject] = useState<(typeof projects)[0] | null>(null)
-  const [dialogOpen, setDialogOpen] = useState(false)
-  const [isDragging, setIsDragging] = useState(false)
-  const [startX, setStartX] = useState(0)
-  const [scrollLeft, setScrollLeft] = useState(0)
-  const [autoScrollEnabled, setAutoScrollEnabled] = useState(true)
+  const ref = useRef(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, amount: 0.2 });
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [selectedProject, setSelectedProject] = useState<
+    (typeof projects)[0] | null
+  >(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
+  const [autoScrollEnabled, setAutoScrollEnabled] = useState(true);
 
   // Handle auto-scrolling
   useEffect(() => {
-    if (!autoScrollEnabled) return
+    if (!autoScrollEnabled) return;
 
     const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % projects.length)
-    }, 5000)
+      setCurrentIndex((prev) => (prev + 1) % projects.length);
+    }, 5000);
 
-    return () => clearInterval(interval)
-  }, [autoScrollEnabled])
+    return () => clearInterval(interval);
+  }, [autoScrollEnabled]);
 
   // Scroll to the current project when currentIndex changes
   useEffect(() => {
     if (containerRef.current) {
-      const scrollAmount = currentIndex * (window.innerWidth * 0.8)
+      const scrollAmount = currentIndex * (window.innerWidth * 0.8);
       containerRef.current.scrollTo({
         left: scrollAmount,
         behavior: "smooth",
-      })
+      });
     }
-  }, [currentIndex])
+  }, [currentIndex]);
 
   const navigateToProject = (index: number) => {
     // Ensure the index is within bounds
-    const newIndex = (index + projects.length) % projects.length
-    setCurrentIndex(newIndex)
-    setAutoScrollEnabled(false)
+    const newIndex = (index + projects.length) % projects.length;
+    setCurrentIndex(newIndex);
+    setAutoScrollEnabled(false);
 
     // Re-enable auto-scroll after 10 seconds of inactivity
     setTimeout(() => {
-      setAutoScrollEnabled(true)
-    }, 10000)
-  }
+      setAutoScrollEnabled(true);
+    }, 10000);
+  };
 
   const openProjectDetails = (project: (typeof projects)[0]) => {
-    setSelectedProject(project)
-    setDialogOpen(true)
-    setAutoScrollEnabled(false)
-  }
+    setSelectedProject(project);
+    setDialogOpen(true);
+    setAutoScrollEnabled(false);
+  };
 
   // Mouse event handlers for custom dragging
   const handleMouseDown = (e: React.MouseEvent) => {
-    setIsDragging(true)
-    setStartX(e.pageX - containerRef.current!.offsetLeft)
-    setScrollLeft(containerRef.current!.scrollLeft)
-    setAutoScrollEnabled(false)
-  }
+    setIsDragging(true);
+    setStartX(e.pageX - containerRef.current!.offsetLeft);
+    setScrollLeft(containerRef.current!.scrollLeft);
+    setAutoScrollEnabled(false);
+  };
 
   const handleMouseUp = () => {
-    setIsDragging(false)
+    setIsDragging(false);
 
     // Determine which project is most visible and snap to it
     if (containerRef.current) {
-      const scrollPosition = containerRef.current.scrollLeft
-      const itemWidth = window.innerWidth * 0.8
-      const newIndex = Math.round(scrollPosition / itemWidth)
-      setCurrentIndex(Math.min(newIndex, projects.length - 1))
+      const scrollPosition = containerRef.current.scrollLeft;
+      const itemWidth = window.innerWidth * 0.8;
+      const newIndex = Math.round(scrollPosition / itemWidth);
+      setCurrentIndex(Math.min(newIndex, projects.length - 1));
     }
 
     // Re-enable auto-scroll after 10 seconds of inactivity
     setTimeout(() => {
-      setAutoScrollEnabled(true)
-    }, 10000)
-  }
+      setAutoScrollEnabled(true);
+    }, 10000);
+  };
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging) return
-    e.preventDefault()
+    if (!isDragging) return;
+    e.preventDefault();
 
-    const x = e.pageX - containerRef.current!.offsetLeft
-    const walk = (x - startX) * 2 // Scroll speed multiplier
-    containerRef.current!.scrollLeft = scrollLeft - walk
-  }
+    const x = e.pageX - containerRef.current!.offsetLeft;
+    const walk = (x - startX) * 2; // Scroll speed multiplier
+    containerRef.current!.scrollLeft = scrollLeft - walk;
+  };
 
   const handleTouchStart = (e: React.TouchEvent) => {
-    setIsDragging(true)
-    setStartX(e.touches[0].pageX - containerRef.current!.offsetLeft)
-    setScrollLeft(containerRef.current!.scrollLeft)
-    setAutoScrollEnabled(false)
-  }
+    setIsDragging(true);
+    setStartX(e.touches[0].pageX - containerRef.current!.offsetLeft);
+    setScrollLeft(containerRef.current!.scrollLeft);
+    setAutoScrollEnabled(false);
+  };
 
   const handleTouchEnd = () => {
-    setIsDragging(false)
+    setIsDragging(false);
 
     // Determine which project is most visible and snap to it
     if (containerRef.current) {
-      const scrollPosition = containerRef.current.scrollLeft
-      const itemWidth = window.innerWidth * 0.8
-      const newIndex = Math.round(scrollPosition / itemWidth)
-      setCurrentIndex(Math.min(newIndex, projects.length - 1))
+      const scrollPosition = containerRef.current.scrollLeft;
+      const itemWidth = window.innerWidth * 0.8;
+      const newIndex = Math.round(scrollPosition / itemWidth);
+      setCurrentIndex(Math.min(newIndex, projects.length - 1));
     }
 
     // Re-enable auto-scroll after 10 seconds of inactivity
     setTimeout(() => {
-      setAutoScrollEnabled(true)
-    }, 10000)
-  }
+      setAutoScrollEnabled(true);
+    }, 10000);
+  };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    if (!isDragging) return
+    if (!isDragging) return;
 
-    const x = e.touches[0].pageX - containerRef.current!.offsetLeft
-    const walk = (x - startX) * 2
-    containerRef.current!.scrollLeft = scrollLeft - walk
-  }
+    const x = e.touches[0].pageX - containerRef.current!.offsetLeft;
+    const walk = (x - startX) * 2;
+    containerRef.current!.scrollLeft = scrollLeft - walk;
+  };
 
   return (
     <section id="projects" className="py-20 relative overflow-hidden">
@@ -276,7 +270,8 @@ export default function Projects() {
             Featured Projects
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            A selection of my recent work. Each project represents a unique challenge and solution.
+            A selection of my recent work. Each project represents a unique
+            challenge and solution.
           </p>
         </motion.div>
 
@@ -364,6 +359,9 @@ export default function Projects() {
                     stiffness: 100,
                   }}
                   className="h-full"
+                  // onClick={() => {
+                  //   openProjectDetails(project);
+                  // }}
                 >
                   <div
                     className="relative overflow-hidden rounded-2xl border shadow-lg h-[600px] md:h-[500px] group"
@@ -407,9 +405,13 @@ export default function Projects() {
                           Featured Project
                         </div>
 
-                        <h3 className="text-3xl md:text-4xl font-bold mb-3">{project.title}</h3>
+                        <h3 className="text-3xl md:text-4xl font-bold mb-3">
+                          {project.title}
+                        </h3>
 
-                        <p className="text-muted-foreground mb-6 max-w-lg">{project.description}</p>
+                        <p className="text-muted-foreground mb-6 max-w-lg">
+                          {project.description}
+                        </p>
 
                         <div className="flex flex-wrap gap-2 mb-8">
                           {project.techStack.map((tech) => (
@@ -433,7 +435,11 @@ export default function Projects() {
                             View Details
                           </Button>
 
-                          <Link href={project.link} target="_blank" rel="noopener noreferrer">
+                          <Link
+                            href={project.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
                             <Button
                               style={{
                                 backgroundColor: project.color,
@@ -484,11 +490,11 @@ export default function Projects() {
       <Dialog
         open={dialogOpen}
         onOpenChange={(open) => {
-          setDialogOpen(open)
+          setDialogOpen(open);
           if (!open) {
             setTimeout(() => {
-              setAutoScrollEnabled(true)
-            }, 1000)
+              setAutoScrollEnabled(true);
+            }, 1000);
           }
         }}
       >
@@ -496,10 +502,17 @@ export default function Projects() {
           <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <div className="flex items-center gap-3">
-                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: selectedProject.color }} />
-                <DialogTitle className="text-2xl">{selectedProject.title}</DialogTitle>
+                <div
+                  className="w-3 h-3 rounded-full"
+                  style={{ backgroundColor: selectedProject.color }}
+                />
+                <DialogTitle className="text-2xl">
+                  {selectedProject.title}
+                </DialogTitle>
               </div>
-              <DialogDescription>{selectedProject.description}</DialogDescription>
+              <DialogDescription>
+                {selectedProject.description}
+              </DialogDescription>
             </DialogHeader>
 
             <div className="mt-4">
@@ -522,7 +535,10 @@ export default function Projects() {
               <div className="space-y-6">
                 <div>
                   <h3 className="text-lg font-semibold flex items-center gap-2">
-                    <div className="w-1 h-6 rounded-full" style={{ backgroundColor: selectedProject.color }} />
+                    <div
+                      className="w-1 h-6 rounded-full"
+                      style={{ backgroundColor: selectedProject.color }}
+                    />
                     Overview
                   </h3>
                   <p className="mt-2">{selectedProject.longDescription}</p>
@@ -530,13 +546,19 @@ export default function Projects() {
 
                 <div>
                   <h3 className="text-lg font-semibold flex items-center gap-2">
-                    <div className="w-1 h-6 rounded-full" style={{ backgroundColor: selectedProject.color }} />
+                    <div
+                      className="w-1 h-6 rounded-full"
+                      style={{ backgroundColor: selectedProject.color }}
+                    />
                     Key Features
                   </h3>
                   <ul className="mt-2 grid grid-cols-1 md:grid-cols-2 gap-2">
                     {selectedProject.features.map((feature, index) => (
                       <li key={index} className="flex items-start gap-2">
-                        <div className="w-2 h-2 rounded-full mt-2" style={{ backgroundColor: selectedProject.color }} />
+                        <div
+                          className="w-2 h-2 rounded-full mt-2"
+                          style={{ backgroundColor: selectedProject.color }}
+                        />
                         <span>{feature}</span>
                       </li>
                     ))}
@@ -545,7 +567,10 @@ export default function Projects() {
 
                 <div>
                   <h3 className="text-lg font-semibold flex items-center gap-2">
-                    <div className="w-1 h-6 rounded-full" style={{ backgroundColor: selectedProject.color }} />
+                    <div
+                      className="w-1 h-6 rounded-full"
+                      style={{ backgroundColor: selectedProject.color }}
+                    />
                     Technologies Used
                   </h3>
                   <div className="flex flex-wrap gap-2 mt-2">
@@ -566,7 +591,11 @@ export default function Projects() {
                 </div>
 
                 <div className="flex flex-wrap gap-4 pt-4">
-                  <Link href={selectedProject.link} target="_blank" rel="noopener noreferrer">
+                  <Link
+                    href={selectedProject.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     <Button
                       className="flex items-center gap-2"
                       style={{
@@ -578,8 +607,15 @@ export default function Projects() {
                       Live Demo
                     </Button>
                   </Link>
-                  <Link href={selectedProject.github} target="_blank" rel="noopener noreferrer">
-                    <Button variant="outline" className="flex items-center gap-2">
+                  <Link
+                    href={selectedProject.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Button
+                      variant="outline"
+                      className="flex items-center gap-2"
+                    >
                       <Github className="h-4 w-4" />
                       View Code
                     </Button>
@@ -591,5 +627,5 @@ export default function Projects() {
         )}
       </Dialog>
     </section>
-  )
+  );
 }
