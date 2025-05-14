@@ -1,8 +1,6 @@
 "use client";
 
-import type React from "react";
-
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -30,7 +28,7 @@ const projects = [
     id: 1,
     title: "Endubis Wallet",
     description:
-      "At Endubis, the Cardano Wallet project aims to simplify ADA asset management through a secure Telegram bot, making crypto accessible in Ethiopia. I helped build and deploy the backend, integrating Cardano’s API and designing commands for an intuitive user experience in Telegram.",
+      "At Endubis, the Cardano Wallet project aims to simplify ADA asset management through a secure Telegram bot, making crypto accessible in Ethiopia. I helped build and deploy the backend, integrating Cardano's API and designing commands for an intuitive user experience in Telegram.",
     image: ASSETS.IMAGES.ENDUBIS_V2,
     color: "#FF6B6B",
     techStack: [
@@ -76,7 +74,6 @@ const projects = [
       "Responsive and modern user interface",
     ],
   },
-
   {
     id: 3,
     title: "Shengo",
@@ -107,124 +104,99 @@ const projects = [
   },
 ];
 
+// Custom hook for card swapping
+const useSwapper = () => {
+  const [[page, direction], setPage] = useState([0, 0]);
+
+  const paginate = (newDirection: number) => {
+    // Calculate the new page index
+    let newPage = page + newDirection;
+
+    // Handle wrapping around at the boundaries
+    if (newPage < 0) newPage = projects.length - 1;
+    if (newPage >= projects.length) newPage = 0;
+
+    setPage([newPage, newDirection]);
+  };
+
+  return {
+    page,
+    direction,
+    paginate,
+  };
+};
+
+// Animation variants
+const variants = {
+  enter: (direction: number) => {
+    return {
+      x: direction > 0 ? 1000 : -1000,
+      opacity: 0,
+      scale: 0.8,
+    };
+  },
+  center: {
+    zIndex: 1,
+    x: 0,
+    opacity: 1,
+    scale: 1,
+  },
+  exit: (direction: number) => {
+    return {
+      zIndex: 0,
+      x: direction < 0 ? 1000 : -1000,
+      opacity: 0,
+      scale: 0.8,
+    };
+  },
+};
+
+// Swipe threshold for touch detection
+const swipeConfidenceThreshold = 10000;
+const swipePower = (offset: number, velocity: number) => {
+  return Math.abs(offset) * velocity;
+};
+
 export default function Projects() {
   const ref = useRef(null);
-  const containerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, amount: 0.2 });
-  const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedProject, setSelectedProject] = useState<
     (typeof projects)[0] | null
   >(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const [scrollLeft, setScrollLeft] = useState(0);
-  const [autoScrollEnabled, setAutoScrollEnabled] = useState(true);
+  const [autoSwapEnabled, setAutoSwapEnabled] = useState(true);
 
-  // Handle auto-scrolling
+  // Use the custom swapper hook
+  const { page, direction, paginate } = useSwapper();
+
+  // Auto-swap timer
   useEffect(() => {
-    if (!autoScrollEnabled) return;
+    if (!autoSwapEnabled) return;
 
     const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % projects.length);
+      paginate(1); // Move forward by default
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [autoScrollEnabled]);
-
-  // Scroll to the current project when currentIndex changes
-  useEffect(() => {
-    if (containerRef.current) {
-      const scrollAmount = currentIndex * (window.innerWidth * 0.8);
-      containerRef.current.scrollTo({
-        left: scrollAmount,
-        behavior: "smooth",
-      });
-    }
-  }, [currentIndex]);
-
-  const navigateToProject = (index: number) => {
-    // Ensure the index is within bounds
-    const newIndex = (index + projects.length) % projects.length;
-    setCurrentIndex(newIndex);
-    setAutoScrollEnabled(false);
-
-    // Re-enable auto-scroll after 10 seconds of inactivity
-    setTimeout(() => {
-      setAutoScrollEnabled(true);
-    }, 10000);
-  };
+  }, [autoSwapEnabled, paginate]);
 
   const openProjectDetails = (project: (typeof projects)[0]) => {
     setSelectedProject(project);
     setDialogOpen(true);
-    setAutoScrollEnabled(false);
+    setAutoSwapEnabled(false);
   };
 
-  // Mouse event handlers for custom dragging
-  const handleMouseDown = (e: React.MouseEvent) => {
-    setIsDragging(true);
-    setStartX(e.pageX - containerRef.current!.offsetLeft);
-    setScrollLeft(containerRef.current!.scrollLeft);
-    setAutoScrollEnabled(false);
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
-
-    // Determine which project is most visible and snap to it
-    if (containerRef.current) {
-      const scrollPosition = containerRef.current.scrollLeft;
-      const itemWidth = window.innerWidth * 0.8;
-      const newIndex = Math.round(scrollPosition / itemWidth);
-      setCurrentIndex(Math.min(newIndex, projects.length - 1));
-    }
-
-    // Re-enable auto-scroll after 10 seconds of inactivity
+  // Re-enable auto-swap after inactivity
+  const enableAutoSwap = () => {
     setTimeout(() => {
-      setAutoScrollEnabled(true);
+      setAutoSwapEnabled(true);
     }, 10000);
   };
 
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging) return;
-    e.preventDefault();
-
-    const x = e.pageX - containerRef.current!.offsetLeft;
-    const walk = (x - startX) * 2; // Scroll speed multiplier
-    containerRef.current!.scrollLeft = scrollLeft - walk;
-  };
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    setIsDragging(true);
-    setStartX(e.touches[0].pageX - containerRef.current!.offsetLeft);
-    setScrollLeft(containerRef.current!.scrollLeft);
-    setAutoScrollEnabled(false);
-  };
-
-  const handleTouchEnd = () => {
-    setIsDragging(false);
-
-    // Determine which project is most visible and snap to it
-    if (containerRef.current) {
-      const scrollPosition = containerRef.current.scrollLeft;
-      const itemWidth = window.innerWidth * 0.8;
-      const newIndex = Math.round(scrollPosition / itemWidth);
-      setCurrentIndex(Math.min(newIndex, projects.length - 1));
-    }
-
-    // Re-enable auto-scroll after 10 seconds of inactivity
-    setTimeout(() => {
-      setAutoScrollEnabled(true);
-    }, 10000);
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (!isDragging) return;
-
-    const x = e.touches[0].pageX - containerRef.current!.offsetLeft;
-    const walk = (x - startX) * 2;
-    containerRef.current!.scrollLeft = scrollLeft - walk;
+  const handleNavigation = (direction: number) => {
+    paginate(direction);
+    setAutoSwapEnabled(false);
+    enableAutoSwap();
   };
 
   return (
@@ -278,7 +250,7 @@ export default function Projects() {
         {/* Navigation Arrows */}
         <div className="relative z-10 mb-8 flex justify-between items-center">
           <button
-            onClick={() => navigateToProject(currentIndex - 1)}
+            onClick={() => handleNavigation(-1)}
             className="group flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors duration-300"
             aria-label="Previous project"
           >
@@ -293,13 +265,16 @@ export default function Projects() {
             {projects.map((_, index) => (
               <button
                 key={index}
-                onClick={() => navigateToProject(index)}
+                onClick={() => {
+                  const newDirection = index > page ? 1 : -1;
+                  handleNavigation(newDirection);
+                }}
                 className="group"
                 aria-label={`Go to project ${index + 1}`}
               >
                 <div
                   className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                    index === currentIndex
+                    index === page
                       ? "bg-primary scale-125"
                       : "bg-muted-foreground/30 group-hover:bg-muted-foreground/50"
                   }`}
@@ -309,7 +284,7 @@ export default function Projects() {
           </div>
 
           <button
-            onClick={() => navigateToProject(currentIndex + 1)}
+            onClick={() => handleNavigation(1)}
             className="group flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors duration-300"
             aria-label="Next project"
           >
@@ -320,160 +295,45 @@ export default function Projects() {
           </button>
         </div>
 
-        {/* Project Showcase - Horizontal Scroll */}
-        <div
-          className="relative overflow-hidden"
-          style={{
-            perspective: "1000px",
-            transformStyle: "preserve-3d",
-          }}
-        >
-          <div
-            ref={containerRef}
-            className="flex overflow-x-scroll snap-x snap-mandatory hide-scrollbar"
-            style={{
-              scrollbarWidth: "none",
-              msOverflowStyle: "none",
-            }}
-            onMouseDown={handleMouseDown}
-            onMouseUp={handleMouseUp}
-            onMouseLeave={handleMouseUp}
-            onMouseMove={handleMouseMove}
-            onTouchStart={handleTouchStart}
-            onTouchEnd={handleTouchEnd}
-            onTouchMove={handleTouchMove}
-          >
-            {projects.map((project, index) => (
-              <div key={project.id} className="min-w-[80vw] px-4 snap-center">
-                <motion.div
-                  initial={{ opacity: 0, rotateY: 25, scale: 0.9 }}
-                  animate={{
-                    opacity: isInView ? 1 : 0,
-                    rotateY: isInView ? 0 : 25,
-                    scale: isInView ? 1 : 0.9,
-                  }}
-                  transition={{
-                    duration: 0.8,
-                    delay: index * 0.1,
-                    type: "spring",
-                    stiffness: 100,
-                  }}
-                  className="h-full"
-                  // onClick={() => {
-                  //   openProjectDetails(project);
-                  // }}
-                >
-                  <div
-                    className="relative overflow-hidden rounded-2xl border shadow-lg h-[600px] md:h-[500px] group"
-                    style={{
-                      background: `linear-gradient(135deg, ${project.color}20, transparent)`,
-                      borderColor: `${project.color}40`,
-                    }}
-                  >
-                    {/* Project Image with Overlay */}
-                    <div className="absolute inset-0 w-full h-full">
-                      <div className="relative h-full w-full overflow-hidden">
-                        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/95 z-10" />
-                        <Image
-                          src={project.image || "/placeholder.svg"}
-                          alt={project.title}
-                          fill
-                          className="object-cover opacity-60 group-hover:scale-105 group-hover:opacity-75 transition-all duration-700"
-                        />
-                      </div>
-                    </div>
+        {/* Projects Swapper */}
+        <div className="relative h-[600px] md:h-[500px] overflow-hidden">
+          <AnimatePresence initial={false} custom={direction}>
+            <motion.div
+              key={page}
+              custom={direction}
+              variants={variants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{
+                x: { type: "spring", stiffness: 300, damping: 30 },
+                opacity: { duration: 0.5 },
+              }}
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={1}
+              onDragEnd={(e, { offset, velocity }) => {
+                const swipe = swipePower(offset.x, velocity.x);
 
-                    {/* Content */}
-                    <div className="relative z-20 flex flex-col h-full p-6 md:p-8">
-                      {/* Project Number */}
-                      <div
-                        className="text-8xl font-bold opacity-10 absolute top-0 right-4"
-                        style={{ color: project.color }}
-                      >
-                        {(index + 1).toString().padStart(2, "0")}
-                      </div>
-
-                      {/* Project Info */}
-                      <div className="mt-auto">
-                        <div
-                          className="inline-block px-3 py-1 rounded-full text-xs font-medium mb-4"
-                          style={{
-                            backgroundColor: `${project.color}30`,
-                            color: project.color,
-                          }}
-                        >
-                          Featured Project
-                        </div>
-
-                        <h3 className="text-3xl md:text-4xl font-bold mb-3">
-                          {project.title}
-                        </h3>
-
-                        <p className="text-muted-foreground mb-6 max-w-lg">
-                          {project.description}
-                        </p>
-
-                        <div className="flex flex-wrap gap-2 mb-8">
-                          {project.techStack.map((tech) => (
-                            <Badge
-                              key={tech}
-                              variant="outline"
-                              className="bg-background/50 backdrop-blur-sm border-muted"
-                            >
-                              {tech}
-                            </Badge>
-                          ))}
-                        </div>
-
-                        <div className="flex flex-wrap gap-4">
-                          <Button
-                            onClick={() => openProjectDetails(project)}
-                            variant="outline"
-                            className="group bg-background/50 backdrop-blur-sm hover:bg-background"
-                          >
-                            <Maximize2 className="mr-2 h-4 w-4 group-hover:scale-110 transition-transform duration-300" />
-                            View Details
-                          </Button>
-
-                          <Link
-                            href={project.link}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <Button
-                              style={{
-                                backgroundColor: project.color,
-                                color: "#fff",
-                              }}
-                              className="group hover:opacity-90"
-                            >
-                              <span className="group-hover:translate-x-1 transition-transform duration-300">
-                                Explore Project
-                              </span>
-                              <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
-                            </Button>
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Decorative Elements */}
-                    <div
-                      className="absolute top-8 left-8 w-20 h-20 border-t-2 border-l-2 opacity-30"
-                      style={{ borderColor: project.color }}
-                    />
-                    <div
-                      className="absolute bottom-8 right-8 w-20 h-20 border-b-2 border-r-2 opacity-30"
-                      style={{ borderColor: project.color }}
-                    />
-                  </div>
-                </motion.div>
-              </div>
-            ))}
-          </div>
+                if (swipe < -swipeConfidenceThreshold) {
+                  handleNavigation(1);
+                } else if (swipe > swipeConfidenceThreshold) {
+                  handleNavigation(-1);
+                }
+              }}
+              className="absolute w-full"
+            >
+              <ProjectCard
+                project={projects[page]}
+                index={page}
+                isInView={isInView}
+                openProjectDetails={openProjectDetails}
+              />
+            </motion.div>
+          </AnimatePresence>
         </div>
 
-        {/* Drag Indicator */}
+        {/* Swipe Indicator */}
         <motion.div
           className="flex items-center justify-center mt-8 text-sm text-muted-foreground"
           initial={{ opacity: 0 }}
@@ -481,7 +341,7 @@ export default function Projects() {
           transition={{ delay: 1, duration: 0.5 }}
         >
           <div className="w-10 h-1 bg-muted-foreground/30 rounded-full mr-3 animate-pulse" />
-          Drag to explore projects
+          Swipe to explore projects
           <div className="w-10 h-1 bg-muted-foreground/30 rounded-full ml-3 animate-pulse" />
         </motion.div>
       </div>
@@ -492,9 +352,7 @@ export default function Projects() {
         onOpenChange={(open) => {
           setDialogOpen(open);
           if (!open) {
-            setTimeout(() => {
-              setAutoScrollEnabled(true);
-            }, 1000);
+            enableAutoSwap();
           }
         }}
       >
@@ -627,5 +485,141 @@ export default function Projects() {
         )}
       </Dialog>
     </section>
+  );
+}
+
+// Extracted ProjectCard component for cleaner code
+function ProjectCard({
+  project,
+  index,
+  isInView,
+  openProjectDetails,
+}: {
+  project: (typeof projects)[0];
+  index: number;
+  isInView: boolean;
+  openProjectDetails: (project: (typeof projects)[0]) => void;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, rotateY: 25, scale: 0.9 }}
+      animate={{
+        opacity: isInView ? 1 : 0,
+        rotateY: isInView ? 0 : 25,
+        scale: isInView ? 1 : 0.9,
+      }}
+      transition={{
+        duration: 0.8,
+        type: "spring",
+        stiffness: 100,
+      }}
+      className="h-full px-8 py-2"
+    >
+      <div
+        className="relative overflow-hidden rounded-2xl border shadow-lg h-full w-full mx-auto max-w-4xl group"
+        style={{
+          background: `linear-gradient(135deg, ${project.color}20, transparent)`,
+          borderColor: `${project.color}40`,
+        }}
+      >
+        {/* Project Image with Overlay */}
+        <div className="absolute inset-0 w-full h-full">
+          <div className="relative h-full w-full overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-b from-background/30 via-background/40 to-background/95 z-10" />
+            <Image
+              src={project.image || "/placeholder.svg"}
+              alt={project.title}
+              fill
+              className="object-cover opacity-60 group-hover:scale-105 group-hover:opacity-75 transition-all duration-700"
+            />
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="relative z-20 flex flex-col h-full p-6 md:p-8 rounded-lg backdrop-blur-sm bg-background/20">
+          {/* Project Number */}
+          <div
+            className="text-8xl font-bold opacity-10 absolute top-0 right-4"
+            style={{ color: project.color }}
+          >
+            {(index + 1).toString().padStart(2, "0")}
+          </div>
+
+          {/* Project Info */}
+          <div className="mt-auto">
+            <div
+              className="inline-block px-3 py-1 rounded-full text-xs font-medium mb-4"
+              style={{
+                backgroundColor: `${project.color}30`,
+                color: project.color,
+              }}
+            >
+              Featured Project
+            </div>
+            <section className="flex flex-col gap-4">
+              <h3 className="text-3xl md:text-4xl font-bold mb-3 text-foreground drop-shadow-md">
+                {project.title}
+              </h3>
+
+              <p className="text-foreground mb-6 max-w-lg drop-shadow-sm line-clamp-2">
+                {project.description}
+              </p>
+            </section>
+
+            <div className="flex flex-wrap gap-2 mb-8">
+              {project.techStack.map((tech) => (
+                <Badge
+                  key={tech}
+                  variant="outline"
+                  className="bg-background/50 backdrop-blur-sm border-muted"
+                >
+                  {tech}
+                </Badge>
+              ))}
+            </div>
+
+            <div className="flex flex-wrap gap-4">
+              <Button
+                onClick={() => openProjectDetails(project)}
+                variant="outline"
+                className="group bg-background/50 backdrop-blur-sm hover:bg-background"
+              >
+                <Maximize2 className="mr-2 h-4 w-4 group-hover:scale-110 transition-transform duration-300" />
+                View Details
+              </Button>
+
+              <Link
+                href={project.link}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Button
+                  style={{
+                    backgroundColor: project.color,
+                    color: "#fff",
+                  }}
+                  className="group hover:opacity-90"
+                >
+                  <span className="group-hover:translate-x-1 transition-transform duration-300">
+                    Explore Project
+                  </span>
+                  <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* Decorative Elements */}
+        <div
+          className="absolute top-8 left-8 w-20 h-20 border-t-2 border-l-2 opacity-30"
+          style={{ borderColor: project.color }}
+        />
+        <div
+          className="absolute bottom-8 right-8 w-20 h-20 border-b-2 border-r-2 opacity-30"
+          style={{ borderColor: project.color }}
+        />
+      </div>
+    </motion.div>
   );
 }
