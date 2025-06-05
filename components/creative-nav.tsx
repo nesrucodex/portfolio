@@ -82,7 +82,7 @@ export default function CreativeNav() {
 
       const currentSection = sections.find((section) => {
         if (section === "home") {
-          return window.scrollY < 300;
+          return window?.scrollY < 300;
         }
         const element = document.getElementById(section);
         if (!element) return false;
@@ -96,8 +96,8 @@ export default function CreativeNav() {
       }
     };
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    window?.addEventListener("scroll", handleScroll);
+    return () => window?.removeEventListener("scroll", handleScroll);
   }, []);
 
   const toggleTheme = () => {

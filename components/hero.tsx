@@ -12,6 +12,11 @@ const kanji = ["技", "力", "智"];
 export default function Hero() {
   const [currentKanji, setCurrentKanji] = useState(0);
 
+  const windowInnerWidth =
+    typeof window !== "undefined" ? window.innerWidth : 0;
+  const windowInnerHeight =
+    typeof window !== "undefined" ? window.innerHeight : 0;
+
   // Cycle through kanji characters
   useEffect(() => {
     const interval = setInterval(() => {
@@ -31,11 +36,11 @@ export default function Hero() {
             className="absolute opacity-10"
             initial={{
               x: -200,
-              y: Math.random() * window.innerHeight,
+              y: Math.random() * windowInnerHeight,
             }}
             animate={{
-              x: window.innerWidth + 200,
-              y: Math.random() * window.innerHeight,
+              x: windowInnerWidth + 200,
+              y: Math.random() * windowInnerHeight,
             }}
             transition={{
               duration: 20 + i * 5,

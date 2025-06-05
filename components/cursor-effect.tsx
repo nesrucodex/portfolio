@@ -158,18 +158,18 @@ export default function CursorEffect() {
       setParticles((prev) => [...prev, ...createParticles(x, y, 12)]);
     };
 
-    window.addEventListener("mousemove", moveCursor);
-    window.addEventListener("mousedown", handleMouseDown);
-    window.addEventListener("mouseup", handleMouseUp);
-    window.addEventListener("contextmenu", handleContextMenu);
+    window?.addEventListener("mousemove", moveCursor);
+    window?.addEventListener("mousedown", handleMouseDown);
+    window?.addEventListener("mouseup", handleMouseUp);
+    window?.addEventListener("contextmenu", handleContextMenu);
     document.addEventListener("mouseleave", handleMouseLeave);
     document.addEventListener("mouseenter", handleMouseEnter);
 
     return () => {
-      window.removeEventListener("mousemove", moveCursor);
-      window.removeEventListener("mousedown", handleMouseDown);
-      window.removeEventListener("mouseup", handleMouseUp);
-      window.removeEventListener("contextmenu", handleContextMenu);
+      window?.removeEventListener("mousemove", moveCursor);
+      window?.removeEventListener("mousedown", handleMouseDown);
+      window?.removeEventListener("mouseup", handleMouseUp);
+      window?.removeEventListener("contextmenu", handleContextMenu);
       document.removeEventListener("mouseleave", handleMouseLeave);
       document.removeEventListener("mouseenter", handleMouseEnter);
     };
@@ -201,7 +201,7 @@ export default function CursorEffect() {
   }, []);
 
   // Only show on desktop
-  if (typeof window !== "undefined" && window.innerWidth < 768) {
+  if (typeof window !== "undefined" && window?.innerWidth < 768) {
     return null;
   }
 

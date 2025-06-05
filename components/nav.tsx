@@ -24,11 +24,11 @@ export default function Nav() {
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 20)
+      setScrolled(window?.scrollY > 20)
     }
 
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
+    window?.addEventListener("scroll", handleScroll)
+    return () => window?.removeEventListener("scroll", handleScroll)
   }, [])
 
   const toggleTheme = () => {
