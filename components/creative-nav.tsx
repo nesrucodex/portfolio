@@ -292,7 +292,7 @@ export default function CreativeNav() {
               onMouseEnter={() => setIsHovered("theme")}
               onMouseLeave={() => setIsHovered(null)}
             >
-              <motion.button
+              {/* <motion.button
                 onClick={toggleTheme}
                 className="relative z-10 p-3 rounded-xl bg-slate-800/50 hover:bg-slate-700/70 text-slate-400 hover:text-slate-200 backdrop-blur-sm flex items-center justify-center transition-all duration-300"
                 whileHover={{
@@ -308,7 +308,7 @@ export default function CreativeNav() {
                 ) : (
                   <Moon className="h-5 w-5" />
                 )}
-              </motion.button>
+              </motion.button> */}
 
               {/* Tooltip */}
               <AnimatePresence>
@@ -523,7 +523,7 @@ export default function CreativeNav() {
                 })}
 
                 <div className="flex gap-4 mt-8">
-                  <motion.button
+                  {/* <motion.button
                     onClick={toggleTheme}
                     className="p-4 rounded-2xl bg-yellow-500/20 text-yellow-500 flex items-center justify-center relative"
                     whileHover={{ scale: 1.1 }}
@@ -537,7 +537,7 @@ export default function CreativeNav() {
                     <motion.div className="absolute inset-0 flex items-center justify-center text-sm font-bold opacity-20">
                       術
                     </motion.div>
-                  </motion.button>
+                  </motion.button> */}
 
                   <Link
                     href="https://github.com/nesrucodex"

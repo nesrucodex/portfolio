@@ -8,7 +8,7 @@ import CursorEffect from "@/components/cursor-effect";
 export default function Home() {
   return (
     <main className="min-h-screen">
-      <CursorEffect /> 
+      {/* <CursorEffect />  */}
       <Hero />
       <Projects />
       <About />

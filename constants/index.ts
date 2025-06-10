@@ -64,7 +64,7 @@ export const PROJECTS = [
       "SoundRig is a music streaming platform where users can discover, share, and stream songs and albums. It offers a personalized listening experience with curated playlists and allows users to connect with artists and other music enthusiasts. The platform also supports features like offline listening and social sharing.",
     image: ASSETS.IMAGES.SOUNDRIG,
     techStack: ["TypeScript", "Mantine", "Tailwind", "Next.js"],
-    link: "soundrig-artist-app.vercel.app",
+    link: "https://soundrig-artist-app.vercel.app",
     github: "https://github.com/nesrucodex",
     longDescription:
       "A dynamic music streaming platform built with Next.js and TypeScript, designed for seamless discovery, sharing, and streaming of songs and albums. SoundRig offers users a personalized experience through curated playlists, offline listening options, and social sharing capabilities. It fosters a community-driven environment where users can follow artists, interact with other music lovers, and share their favorite tracks. The platform prioritizes an intuitive, responsive UI and robust performance for uninterrupted music enjoyment.",
