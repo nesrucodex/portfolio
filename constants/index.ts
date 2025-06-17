@@ -92,7 +92,7 @@ export const PROJECTS = [
       "Zod",
       "@tanstack/react-query",
     ],
-    link: "shengo.vercel.app",
+    link: "https://shengo.vercel.app",
     github: "https://github.com/nesrucodex/shengo",
     longDescription:
       "An innovative web application designed to automate contract creation and management for diverse transactions, including selling, buying, renting, and service agreements. Built with Vue.js and Express, Shengo streamlines the traditionally manual process of drafting contracts by providing customizable templates and secure digital signing capabilities. Users can easily generate, review, and manage legally binding agreements online, reducing paperwork and improving transaction efficiency.",
