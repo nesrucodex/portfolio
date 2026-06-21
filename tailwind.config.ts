@@ -19,7 +19,29 @@ const config = {
       },
     },
     extend: {
+      fontFamily: {
+        display: ["var(--font-display)", "ui-sans-serif", "system-ui", "sans-serif"],
+        sans: ["var(--font-body)", "ui-sans-serif", "system-ui", "sans-serif"],
+        mono: ["var(--font-mono)", "ui-monospace", "SFMono-Regular", "monospace"],
+      },
       colors: {
+        // Atelier semantic palette
+        ink: {
+          DEFAULT: "#0a0a0c",
+          100: "#141417",
+          200: "#1c1c20",
+          300: "#26262b",
+        },
+        bone: {
+          DEFAULT: "#ecebe4",
+          muted: "#9b988d",
+          dim: "#6a6860",
+        },
+        signal: {
+          DEFAULT: "#ff4d1c",
+          soft: "#ff7a4d",
+        },
+        mint: "#5ee6a8",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -72,6 +94,9 @@ const config = {
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+      },
+      letterSpacing: {
+        tightest: "-0.04em",
       },
     },
   },

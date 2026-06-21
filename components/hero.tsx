@@ -1,250 +1,151 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Github, ArrowRight, Scroll } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
+import { ArrowDownRight, Github, MapPin, Download } from "lucide-react";
+import { PROFILE, DISCIPLINES } from "@/constants";
+import LocalClock from "@/components/local-clock";
+import Corners from "@/components/corners";
 
-// Japanese kanji for skills, strength, wisdom
-const kanji = ["技", "力", "智"];
+const ROLES = PROFILE.roles;
 
 export default function Hero() {
-  const [currentKanji, setCurrentKanji] = useState(0);
+  const [role, setRole] = useState(0);
 
-  const windowInnerWidth =
-    typeof window !== "undefined" ? window.innerWidth : 0;
-  const windowInnerHeight =
-    typeof window !== "undefined" ? window.innerHeight : 0;
-
-  // Cycle through kanji characters
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentKanji((prev) => (prev + 1) % kanji.length);
-    }, 3000);
-    return () => clearInterval(interval);
+    const t = setInterval(() => setRole((p) => (p + 1) % ROLES.length), 2200);
+    return () => clearInterval(t);
   }, []);
 
   return (
-    <section className="relative min-h-screen flex flex-col justify-center items-center px-4 md:px-6 bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 text-white overflow-hidden">
-      {/* Animated Clouds Background */}
-      <div className="absolute inset-0 -z-10">
-        {/* Cloud shapes */}
-        {[...Array(6)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute opacity-10"
-            initial={{
-              x: -200,
-              y: Math.random() * windowInnerHeight,
-            }}
-            animate={{
-              x: windowInnerWidth + 200,
-              y: Math.random() * windowInnerHeight,
-            }}
-            transition={{
-              duration: 20 + i * 5,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "linear",
-            }}
-          >
-            <svg
-              width="120"
-              height="60"
-              viewBox="0 0 120 60"
-              fill="currentColor"
-              className="text-orange-400"
-            >
-              <path d="M20 40c-8 0-15-7-15-15s7-15 15-15c2 0 4 0.5 6 1.5C28 5 35 0 43 0c12 0 22 10 22 22 0 2-0.5 4-1 6 8 2 14 9 14 17 0 10-8 18-18 18H20z" />
-            </svg>
-          </motion.div>
-        ))}
-
-        {/* Subtle pattern overlay */}
-        <div className="absolute inset-0 opacity-5 bg-[radial-gradient(circle_at_50%_50%,rgba(251,146,60,0.3),transparent_50%)]" />
+    <section
+      id="top"
+      className="grain relative flex min-h-screen flex-col justify-center overflow-hidden bg-blueprint pt-28 pb-12"
+    >
+      {/* Big ghost wordmark */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -right-6 bottom-2 select-none font-display text-[22vw] font-extrabold leading-none text-bone/[0.03] md:bottom-6"
+      >
+        ENGINEER
       </div>
 
-      {/* Main Content Container */}
-      <motion.div
-        className="container mx-auto max-w-4xl text-center relative z-10"
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-      >
-        {/* Animated Kanji Background */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentKanji}
-            className="absolute inset-0 flex items-center justify-center text-[15rem] opacity-5 text-orange-400 font-bold pointer-events-none select-none"
-            initial={{ opacity: 0, scale: 0.8, rotate: -10 }}
-            animate={{ opacity: 0.05, scale: 1, rotate: 0 }}
-            exit={{ opacity: 0, scale: 1.2, rotate: 10 }}
-            transition={{ duration: 1.5 }}
-          >
-            {kanji[currentKanji]}
-          </motion.div>
-        </AnimatePresence>
-
-        {/* Status Badge */}
-        <motion.div
-          className="mb-8"
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{
-            type: "spring",
-            stiffness: 400,
-            damping: 10,
-            delay: 0.2,
-          }}
-        >
-          {/* <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange-500/20 border border-orange-400/50 text-orange-200 backdrop-blur-sm">
-            <motion.div
-              className="w-2 h-2 rounded-full bg-orange-400"
-              animate={{ scale: [1, 1.5, 1], opacity: [1, 0.5, 1] }}
-              transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
-            />
-            <span className="text-sm font-medium">
-              Available for new projects
+      <div className="relative z-10 mx-auto grid w-full max-w-6xl grid-cols-1 gap-12 px-5 md:px-10 lg:grid-cols-[1.4fr_1fr] lg:items-center">
+        <Corners />
+        {/* Left, statement */}
+        <div>
+          <div className="animate-rise mb-7 flex flex-wrap items-center gap-x-5 gap-y-2">
+            <span className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.2em] text-mint">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-mint opacity-60" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-mint" />
+              </span>
+              {PROFILE.availability}
             </span>
-          </div> */}
-        </motion.div>
+            <span className="inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-[0.2em] text-bone-muted">
+              <MapPin className="h-3.5 w-3.5" /> {PROFILE.location}
+            </span>
+            <LocalClock className="font-mono text-xs uppercase tracking-[0.2em] text-bone-dim" />
+          </div>
 
-        {/* Main Heading */}
-        <motion.div
-          className="mb-6"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-        >
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-white mb-4">
-            Hi, I'm{" "}
-            <motion.span
-              className="relative inline-block bg-gradient-to-r from-orange-400 via-orange-500 to-orange-600 bg-clip-text text-transparent"
-              whileHover={{ scale: 1.05 }}
-            >
-              Nesru Codex
-              <motion.div
-                className="absolute -bottom-2 left-0 h-1 bg-gradient-to-r from-orange-400 to-orange-600 rounded-full"
-                initial={{ width: 0 }}
-                animate={{ width: "100%" }}
-                transition={{ delay: 1, duration: 0.8 }}
-              />
-            </motion.span>
+          <h1
+            className="animate-rise display text-[clamp(2.6rem,7vw,5.5rem)] text-bone"
+            style={{ animationDelay: "0.08s" }}
+          >
+            {PROFILE.name}
           </h1>
-        </motion.div>
 
-        {/* Role */}
-        <motion.div
-          className="mb-8 relative"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
-        >
-          <motion.div
-            className="absolute -z-10 inset-0 bg-blue-500/20 rounded-full blur-2xl"
-            animate={{
-              scale: [1, 1.3, 1],
-              opacity: [0.3, 0.6, 0.3],
-            }}
-            transition={{ duration: 4, repeat: Number.POSITIVE_INFINITY }}
-          />
-          <h2 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-blue-200">
-            Full Stack Developer
-          </h2>
-        </motion.div>
-
-        {/* Description */}
-        <motion.p
-          className="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto mb-12 leading-relaxed"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.8 }}
-        >
-          I craft exceptional digital experiences with modern web technologies,
-          focusing on performance, accessibility, and elegant design.
-        </motion.p>
-
-        {/* CTA Buttons */}
-        <motion.div
-          className="flex flex-col sm:flex-row gap-4 justify-center mb-16"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1 }}
-        >
-          <Link href="#projects">
-            <Button
-              size="lg"
-              className="group relative overflow-hidden bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300"
-            >
-              <span className="relative z-10">View My Work</span>
-              <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-200" />
-            </Button>
-          </Link>
-
-          <Link
-            href="https://github.com/nesrucodex"
-            target="_blank"
-            rel="noopener noreferrer"
+          {/* Cycling discipline line */}
+          <div
+            className="animate-rise mt-3 flex items-baseline gap-3 text-[clamp(1.5rem,4vw,2.75rem)]"
+            style={{ animationDelay: "0.16s" }}
           >
-            <Button
-              variant="outline"
-              size="lg"
-              className="group border-2 border-slate-600 text-slate-300 hover:bg-slate-800 hover:border-slate-500 backdrop-blur-sm"
-            >
-              <Github className="mr-2 h-5 w-5 group-hover:rotate-12 transition-transform duration-300" />
-              GitHub Profile
-            </Button>
-          </Link>
-        </motion.div>
+            <span className="font-display font-semibold text-bone-muted">I build</span>
+            <span className="relative inline-grid">
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.span
+                  key={role}
+                  initial={{ y: "60%", opacity: 0, rotateX: -40 }}
+                  animate={{ y: 0, opacity: 1, rotateX: 0 }}
+                  exit={{ y: "-60%", opacity: 0, rotateX: 40 }}
+                  transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                  className="font-display font-extrabold text-signal"
+                >
+                  {ROLES[role]}
+                  <span className="text-bone">.</span>
+                </motion.span>
+              </AnimatePresence>
+            </span>
+          </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-2xl mx-auto mb-8">
-          {[
-            { value: "3+", label: "Years Experience", kanji: "年" },
-            { value: "7+", label: "Projects Completed", kanji: "作" },
-            { value: "100%", label: "Client Satisfaction", kanji: "満" },
-          ].map((stat, index) => (
-            <motion.div
-              key={index}
-              className="text-center relative group"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.2 + index * 0.2 }}
-              whileHover={{ scale: 1.05 }}
-            >
-              <div className="relative p-6 rounded-xl bg-slate-800/50 border border-slate-700/50 backdrop-blur-sm group-hover:bg-slate-800/70 transition-all duration-300">
-                <div className="text-xs text-orange-400 mb-2 font-medium">
-                  {stat.kanji}
-                </div>
-                <div className="text-3xl font-bold text-white mb-1">
-                  {stat.value}
-                </div>
-                <div className="text-sm text-slate-400">{stat.label}</div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </motion.div>
-
-      {/* Scroll Indicator */}
-      <motion.div
-        className="absolute bottom-8 left-1/2 -translate-x-1/2"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.5 }}
-      >
-        <div className="flex flex-col items-center text-slate-400">
-          <span className="text-xs uppercase tracking-wide mb-2 font-medium">
-            Scroll
-          </span>
-          <motion.div
-            animate={{ y: [0, 8, 0] }}
-            transition={{ duration: 1.5, repeat: Number.POSITIVE_INFINITY }}
+          <p
+            className="animate-rise mt-7 max-w-xl text-balance text-base leading-relaxed text-bone-muted md:text-lg"
+            style={{ animationDelay: "0.24s" }}
           >
-            <Scroll className="h-5 w-5" />
-          </motion.div>
+            {PROFILE.tagline}
+          </p>
+
+          <div
+            className="animate-rise mt-9 flex flex-wrap items-center gap-4"
+            style={{ animationDelay: "0.32s" }}
+          >
+            <Link
+              href="#work"
+              className="group inline-flex items-center gap-2 bg-signal px-6 py-3.5 font-mono text-xs uppercase tracking-[0.18em] text-ink transition-transform hover:-translate-y-0.5"
+            >
+              See the work
+              <ArrowDownRight className="h-4 w-4 transition-transform group-hover:translate-y-0.5" />
+            </Link>
+            <a
+              href={PROFILE.resume}
+              download={PROFILE.resumeFile}
+              className="group inline-flex items-center gap-2 border border-border px-6 py-3.5 font-mono text-xs uppercase tracking-[0.18em] text-bone transition-colors hover:border-signal hover:text-signal"
+            >
+              <Download className="h-4 w-4 transition-transform group-hover:translate-y-0.5" />
+              Résumé
+            </a>
+            <Link
+              href={PROFILE.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group inline-flex items-center gap-2 border border-border px-6 py-3.5 font-mono text-xs uppercase tracking-[0.18em] text-bone transition-colors hover:border-bone"
+            >
+              <Github className="h-4 w-4" /> GitHub
+            </Link>
+          </div>
         </div>
-      </motion.div>
+
+        {/* Right, build manifest */}
+        <div className="animate-rise panel ticks p-1" style={{ animationDelay: "0.3s" }}>
+          <div className="flex items-center justify-between border-b border-border px-4 py-3">
+            <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-bone-muted">
+              ~/disciplines
+            </span>
+            <span className="font-mono text-[10px] tracking-[0.2em] text-bone-dim">
+              {String(DISCIPLINES.length).padStart(2, "0")}
+            </span>
+          </div>
+          <ul>
+            {DISCIPLINES.map((d) => (
+              <li
+                key={d.id}
+                className="group flex items-center justify-between gap-4 border-b border-border/60 px-4 py-4 last:border-b-0"
+              >
+                <div className="flex items-baseline gap-3">
+                  <span className="font-mono text-xs text-signal">{d.index}</span>
+                  <span className="font-display text-lg font-bold text-bone">
+                    {d.title}
+                  </span>
+                </div>
+                <span className="hidden font-mono text-[11px] text-bone-dim md:block">
+                  {d.stack.slice(0, 3).join(" · ")}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
     </section>
   );
 }

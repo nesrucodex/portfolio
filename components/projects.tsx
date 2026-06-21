@@ -1,388 +1,309 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
-  ArrowRight,
-  ArrowLeft,
-  ExternalLink,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import {
+  ArrowUpRight,
   Github,
-  Eye,
-  Code,
+  ExternalLink,
+  FileText,
+  Lock,
 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { motion, AnimatePresence } from "framer-motion";
-import { PROJECTS } from "@/constants";
+import { PROJECTS, REPOS, type Project } from "@/constants";
+import Corners from "@/components/corners";
 
-// Japanese kanji for projects
-const projectKanji = ["作", "品", "業", "務"];
+// Bento span config keyed by project id (mobile spans + lg bento spans)
+const SPAN: Record<number, string> = {
+  5: "col-span-2 row-span-2 lg:col-span-4 lg:row-span-2", // Aatma (feature)
+  0: "col-span-2 row-span-2 lg:col-span-2 lg:row-span-2", // EaseTenant
+  1: "col-span-2 row-span-2 lg:col-span-2 lg:row-span-2", // Endubis (contain)
+  2: "col-span-1 row-span-1 lg:col-span-2 lg:row-span-1", // Shengo
+  3: "col-span-1 row-span-1 lg:col-span-2 lg:row-span-2", // SoundRig
+  4: "col-span-2 row-span-1 lg:col-span-2 lg:row-span-1", // TaptoSign
+  6: "col-span-1 row-span-1 lg:col-span-3 lg:row-span-1", // Game Server
+  7: "col-span-1 row-span-1 lg:col-span-3 lg:row-span-1", // Parking
+};
 
-
+function ProjectImage({ project }: { project: Project }) {
+  if (!project.image) {
+    return (
+      <div className="absolute inset-0 flex items-center justify-center bg-ink-100 bg-blueprint">
+        <span className="px-4 text-center font-display text-xl font-extrabold text-bone/15 md:text-2xl">
+          {project.title}
+        </span>
+      </div>
+    );
+  }
+  if (project.fit === "contain") {
+    return (
+      <div className="absolute inset-0 bg-ink-100 bg-blueprint">
+        <Image
+          src={project.image}
+          alt={project.title}
+          fill
+          className="object-contain p-4 transition-transform duration-500 group-hover:scale-[1.03]"
+          sizes="(max-width: 1024px) 100vw, 33vw"
+        />
+      </div>
+    );
+  }
+  return (
+    <Image
+      src={project.image}
+      alt={project.title}
+      fill
+      className="object-cover object-top transition-transform duration-700 ease-out group-hover:scale-[1.05]"
+      sizes="(max-width: 1024px) 100vw, 50vw"
+    />
+  );
+}
 
 export default function Projects() {
-  const [currentProject, setCurrentProject] = useState(0);
-  const [selectedProject, setSelectedProject] = useState<
-    (typeof PROJECTS)[0] | null
-  >(null);
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [currentKanji, setCurrentKanji] = useState(0);
-
-  // Cycle through kanji characters
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentKanji((prev) => (prev + 1) % projectKanji.length);
-    }, 4000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const nextProject = () => {
-    setCurrentProject((prev) => (prev + 1) % PROJECTS.length);
-  };
-
-  const prevProject = () => {
-    setCurrentProject((prev) => (prev - 1 + PROJECTS.length) % PROJECTS.length);
-  };
-
-  const openProjectDetails = (project: (typeof PROJECTS)[0]) => {
-    setSelectedProject(project);
-    setDialogOpen(true);
-  };
+  const [selected, setSelected] = useState<Project | null>(null);
 
   return (
     <section
-      id="projects"
-      className="py-20 bg-gradient-to-b from-slate-800 via-slate-900 to-slate-800 relative overflow-hidden"
+      id="work"
+      className="relative border-t border-border px-5 py-24 md:px-10 md:py-32 scroll-mt-20"
     >
-      {/* Animated Clouds Background */}
-      <div className="absolute inset-0 -z-10">
-        {[...Array(8)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute opacity-5"
-            initial={{
-              x: -200,
-              y: Math.random() * 800,
-            }}
-            animate={{
-              x: 1400,
-              y: Math.random() * 800,
-            }}
-            transition={{
-              duration: 25 + i * 5,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "linear",
-            }}
-          >
-            <svg
-              width="100"
-              height="50"
-              viewBox="0 0 100 50"
-              fill="currentColor"
-              className="text-orange-400"
-            >
-              <path d="M15 30c-6 0-12-5-12-12s6-12 12-12c2 0 3 0.5 5 1.5C22 4 27 0 33 0c9 0 17 8 17 17 0 2-0.5 3-1 5 6 2 11 7 11 13 0 8-6 14-14 14H15z" />
-            </svg>
-          </motion.div>
-        ))}
-
-        {/* Subtle pattern overlay */}
-        <div className="absolute inset-0 opacity-5 bg-[radial-gradient(circle_at_30%_70%,rgba(59,130,246,0.3),transparent_50%)]" />
-      </div>
-
-      <div className="max-w-6xl mx-auto px-4 md:px-6 relative z-10">
-        {/* Animated Kanji Background */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentKanji}
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[12rem] opacity-5 text-orange-400 font-bold pointer-events-none select-none"
-            initial={{ opacity: 0, scale: 0.8, rotate: -10 }}
-            animate={{ opacity: 0.05, scale: 1, rotate: 0 }}
-            exit={{ opacity: 0, scale: 1.2, rotate: 10 }}
-            transition={{ duration: 2 }}
-          >
-            {projectKanji[currentKanji]}
-          </motion.div>
-        </AnimatePresence>
-
-        {/* Header */}
-        <motion.div
-          className="text-center mb-16"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-        >
-          <h2 className="text-4xl md:text-5xl font-bold mb-4 text-white">
-            Featured{" "}
-            <span className="bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text text-transparent">
-              Projects
-            </span>
-          </h2>
-          <p className="text-slate-300 max-w-2xl mx-auto text-lg">
-            A selection of my recent work. Each project represents a unique
-            challenge and innovative solution.
-          </p>
-        </motion.div>
-
-        {/* Navigation */}
-        <div className="flex justify-between items-center mb-8">
-          <motion.button
-            onClick={prevProject}
-            className="flex items-center gap-2 px-4 py-2 text-slate-300 hover:text-orange-400 transition-colors bg-slate-800/50 rounded-lg border border-slate-600/50 hover:border-orange-400/50 backdrop-blur-sm"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <ArrowLeft className="h-5 w-5" />
-            <span className="hidden sm:inline">Previous</span>
-          </motion.button>
-
-          {/* Pagination dots */}
-          <div className="flex gap-3">
-            {PROJECTS.map((_, index) => (
-              <motion.button
-                key={index}
-                onClick={() => setCurrentProject(index)}
-                className={`w-4 h-4 rounded-full transition-all duration-300 ${
-                  index === currentProject
-                    ? "bg-orange-400 shadow-[0_0_10px_rgba(251,146,60,0.8)]"
-                    : "bg-slate-600 hover:bg-slate-500"
-                }`}
-                whileHover={{ scale: 1.2 }}
-                animate={
-                  index === currentProject
-                    ? {
-                        boxShadow: [
-                          "0_0_10px_rgba(251,146,60,0.8)",
-                          "0_0_20px_rgba(251,146,60,1)",
-                          "0_0_10px_rgba(251,146,60,0.8)",
-                        ],
-                      }
-                    : {}
-                }
-                transition={{ duration: 1.5, repeat: Number.POSITIVE_INFINITY }}
-              />
-            ))}
+      <div className="relative mx-auto max-w-6xl">
+        <Corners />
+        <div className="mb-12 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+          <div className="reveal">
+            <span className="eyebrow">01 / Selected work</span>
+            <h2 className="display mt-4 text-[clamp(2rem,5vw,3.5rem)] text-bone">
+              Things I&apos;ve shipped.
+            </h2>
           </div>
-
-          <motion.button
-            onClick={nextProject}
-            className="flex items-center gap-2 px-4 py-2 text-slate-300 hover:text-orange-400 transition-colors bg-slate-800/50 rounded-lg border border-slate-600/50 hover:border-orange-400/50 backdrop-blur-sm"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <span className="hidden sm:inline">Next</span>
-            <ArrowRight className="h-5 w-5" />
-          </motion.button>
+          <p className="reveal max-w-sm text-sm leading-relaxed text-bone-muted">
+            Production systems I designed, built and shipped: fintech on Cardano,
+            city-scale transit, real-time platforms and the automation behind
+            them. Tap any tile for the full breakdown.
+          </p>
         </div>
 
-        {/* Project Display */}
-        <motion.div
-          key={currentProject}
-          initial={{ opacity: 0, x: 50 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <Card className="overflow-hidden border border-slate-700/50 shadow-2xl bg-slate-800/50 backdrop-blur-sm">
-            <CardContent className="p-0">
-              <div className="grid md:grid-cols-2 gap-0">
-                {/* Project Image */}
-                <div className="relative h-64 md:h-96 bg-slate-900">
-                  <Image
-                    src={PROJECTS[currentProject].image || "/placeholder.svg"}
-                    alt={PROJECTS[currentProject].title}
-                    fill
-                    className="object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/50 to-transparent" />
+        {/* Bento grid */}
+        <div className="grid grid-flow-row-dense auto-rows-[150px] grid-cols-2 gap-3 sm:gap-4 md:auto-rows-[180px] lg:auto-rows-[210px] lg:grid-cols-6">
+          {PROJECTS.map((p) => {
+            const big = (SPAN[p.id] ?? "").includes("lg:row-span-2");
+            const showDesc = big && p.fit !== "contain";
+            return (
+              <button
+                key={p.id}
+                onClick={() => setSelected(p)}
+                className={`reveal group relative flex flex-col justify-end overflow-hidden border border-border bg-ink text-left transition-colors duration-300 hover:border-signal/50 ${
+                  SPAN[p.id] ?? "col-span-2 lg:col-span-2"
+                }`}
+              >
+                <ProjectImage project={p} />
 
-                  {/* Decorative corner elements */}
-                  <div className="absolute top-4 left-4 w-8 h-8 border-t-2 border-l-2 border-orange-400/60"></div>
-                  <div className="absolute top-4 right-4 w-8 h-8 border-t-2 border-r-2 border-orange-400/60"></div>
-                  <div className="absolute bottom-4 left-4 w-8 h-8 border-b-2 border-l-2 border-orange-400/60"></div>
-                  <div className="absolute bottom-4 right-4 w-8 h-8 border-b-2 border-r-2 border-orange-400/60"></div>
+                {/* Legibility gradient */}
+                <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/45 to-transparent transition-opacity duration-300 group-hover:from-ink" />
+
+                {/* Top row: tags + arrow */}
+                <div className="absolute inset-x-0 top-0 flex items-start justify-between p-3 md:p-4">
+                  <div className="flex flex-wrap gap-1.5">
+                    {p.tags.slice(0, big ? 3 : 1).map((t) => (
+                      <span
+                        key={t}
+                        className="bg-ink/70 px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.12em] text-mint backdrop-blur-sm md:text-[10px]"
+                      >
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                  <span className="grid h-7 w-7 flex-shrink-0 translate-y-0 place-items-center bg-signal/0 text-bone-muted transition-all duration-300 group-hover:bg-signal group-hover:text-ink md:h-8 md:w-8">
+                    <ArrowUpRight className="h-4 w-4" />
+                  </span>
                 </div>
 
-                {/* Project Info */}
-                <div className="p-8 md:p-12 flex flex-col justify-center">
-                  <div className="mb-4">
-                    <span className="text-sm font-medium text-orange-400 uppercase tracking-wide flex items-center gap-2">
-                      <Code className="h-4 w-4" />
-                      Project {(currentProject + 1).toString().padStart(2, "0")}
+                {/* Bottom: title + meta */}
+                <div className="relative z-10 p-4 md:p-5">
+                  <div className="flex items-baseline justify-between gap-2">
+                    <h3
+                      className={`display text-bone transition-colors duration-300 group-hover:text-signal ${
+                        big ? "text-2xl md:text-3xl" : "text-lg md:text-xl"
+                      }`}
+                    >
+                      {p.title}
+                    </h3>
+                    <span className="flex-shrink-0 font-mono text-[10px] text-bone-dim">
+                      {p.year}
                     </span>
                   </div>
-
-                  <h3 className="text-2xl md:text-3xl font-bold mb-4 text-white">
-                    {PROJECTS[currentProject].title}
-                  </h3>
-
-                  <p className="text-slate-300 mb-6 leading-relaxed">
-                    {PROJECTS[currentProject].description}
+                  <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.14em] text-signal/90 md:text-[11px]">
+                    {p.role}
                   </p>
-
-                  {/* Tech Stack */}
-                  <div className="flex flex-wrap gap-2 mb-8">
-                    {PROJECTS[currentProject].techStack.map((tech) => (
-                      <Badge
-                        key={tech}
-                        variant="secondary"
-                        className="bg-blue-500/20 text-blue-200 border border-blue-400/40 hover:bg-blue-500/30 transition-colors"
-                      >
-                        {tech}
-                      </Badge>
-                    ))}
-                  </div>
-
-                  {/* Actions */}
-                  <div className="flex flex-wrap gap-4">
-                    <Button
-                      onClick={() =>
-                        openProjectDetails(PROJECTS[currentProject])
-                      }
-                      variant="outline"
-                      className="flex items-center gap-2 border-slate-600 text-slate-300 hover:bg-slate-700 hover:border-slate-500"
-                    >
-                      <Eye className="h-4 w-4" />
-                      View Details
-                    </Button>
-
-                    <Link
-                      href={PROJECTS[currentProject].link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <Button className="flex items-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white border-0">
-                        <ExternalLink className="h-4 w-4" />
-                        Live Demo
-                      </Button>
-                    </Link>
-
-                    <Link
-                      href={PROJECTS[currentProject].github}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <Button
-                        variant="outline"
-                        className="flex items-center gap-2 border-slate-600 text-slate-300 hover:bg-slate-700 hover:border-slate-500"
-                      >
-                        <Github className="h-4 w-4" />
-                        Code
-                      </Button>
-                    </Link>
-                  </div>
+                  {showDesc && (
+                    <p className="mt-3 hidden max-w-md text-xs leading-relaxed text-bone-muted md:block">
+                      {p.description}
+                    </p>
+                  )}
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* More on GitHub */}
+        <div className="reveal mt-16">
+          <div className="flex items-center justify-between">
+            <span className="eyebrow">More on GitHub</span>
+            <Link
+              href="https://github.com/nesrucodex"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-bone-muted transition-colors hover:text-signal"
+            >
+              <Github className="h-3.5 w-3.5" /> @nesrucodex
+            </Link>
+          </div>
+          <div className="mt-6 grid gap-px border border-border bg-border sm:grid-cols-2 lg:grid-cols-4">
+            {REPOS.map((r) => (
+              <Link
+                key={r.name}
+                href={r.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex flex-col bg-ink p-5 transition-colors hover:bg-ink-100"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-mono text-sm text-bone transition-colors group-hover:text-signal">
+                    {r.name}
+                  </span>
+                  <ArrowUpRight className="h-3.5 w-3.5 text-bone-dim transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-signal" />
+                </div>
+                <span className="mt-2 text-xs leading-relaxed text-bone-muted">
+                  {r.desc}
+                </span>
+                <span className="mt-3 font-mono text-[10px] uppercase tracking-[0.14em] text-bone-dim">
+                  {r.lang}
+                </span>
+              </Link>
+            ))}
+          </div>
+        </div>
       </div>
 
-      {/* Project Details Dialog */}
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        {selectedProject && (
-          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-slate-800 border border-slate-700 text-white">
-            <DialogHeader>
-              <div className="flex items-center gap-3">
-                <Code className="h-6 w-6 text-orange-400" />
-                <DialogTitle className="text-2xl text-white">
-                  {selectedProject.title}
+      {/* Detail dialog */}
+      <Dialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
+        {selected && (
+          <DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto border-border bg-ink-100 p-0 text-bone">
+            <div className="relative aspect-[16/9] w-full overflow-hidden border-b border-border">
+              <ProjectImage project={selected} />
+              <div className="absolute inset-0 bg-gradient-to-t from-ink-100 to-transparent" />
+              {selected.note && (
+                <span className="absolute left-4 top-4 inline-flex items-center gap-1.5 bg-ink/80 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-mint backdrop-blur-sm">
+                  <Lock className="h-3 w-3" /> {selected.note}
+                </span>
+              )}
+            </div>
+            <div className="p-7 md:p-9">
+              <DialogHeader>
+                <span className="font-mono text-xs uppercase tracking-[0.16em] text-signal">
+                  {selected.role} · {selected.year}
+                </span>
+                <DialogTitle className="display mt-2 text-3xl text-bone">
+                  {selected.title}
                 </DialogTitle>
+                <DialogDescription className="mt-3 text-sm leading-relaxed text-bone-muted">
+                  {selected.longDescription}
+                </DialogDescription>
+              </DialogHeader>
+
+              <div className="mt-7">
+                <h4 className="eyebrow">Key features</h4>
+                <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+                  {selected.features.map((f) => (
+                    <li
+                      key={f}
+                      className="flex items-start gap-2.5 text-sm text-bone-muted"
+                    >
+                      <span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 bg-signal" />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
               </div>
-              <DialogDescription className="text-slate-300">
-                {selectedProject.description}
-              </DialogDescription>
-            </DialogHeader>
 
-            <div className="mt-6">
-              <div className="relative h-64 w-full mb-6 rounded-lg overflow-hidden border border-slate-700">
-                <Image
-                  src={selectedProject.image || "/placeholder.svg"}
-                  alt={selectedProject.title}
-                  fill
-                  className="object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/30 to-transparent" />
+              <div className="mt-7">
+                <h4 className="eyebrow">Stack</h4>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {selected.techStack.map((t) => (
+                    <span
+                      key={t}
+                      className="border border-border px-2.5 py-1 font-mono text-[11px] text-bone-muted"
+                    >
+                      {t}
+                    </span>
+                  ))}
+                </div>
               </div>
 
-              <div className="space-y-6">
-                <div>
-                  <h3 className="text-lg font-semibold mb-3 text-white flex items-center gap-2">
-                    <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
-                    Overview
-                  </h3>
-                  <p className="text-slate-300 leading-relaxed">
-                    {selectedProject.longDescription}
-                  </p>
-                </div>
-
-                <div>
-                  <h3 className="text-lg font-semibold mb-3 text-white flex items-center gap-2">
-                    <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
-                    Key Features
-                  </h3>
-                  <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                    {selectedProject.features.map((feature, index) => (
-                      <li key={index} className="flex items-start gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-orange-400 mt-2 flex-shrink-0" />
-                        <span className="text-slate-300">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div>
-                  <h3 className="text-lg font-semibold mb-3 text-white flex items-center gap-2">
-                    <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
-                    Technologies
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {selectedProject.techStack.map((tech) => (
-                      <Badge
-                        key={tech}
-                        variant="secondary"
-                        className="bg-blue-500/20 text-blue-200 border border-blue-400/40"
+              {selected.gallery && selected.gallery.length > 0 && (
+                <div className="mt-7">
+                  <h4 className="eyebrow">More views</h4>
+                  <div className="mt-4 grid gap-3">
+                    {selected.gallery.map((src, idx) => (
+                      <div
+                        key={idx}
+                        className="relative aspect-[16/9] w-full overflow-hidden border border-border"
                       >
-                        {tech}
-                      </Badge>
+                        <Image
+                          src={src}
+                          alt={`${selected.title} view ${idx + 1}`}
+                          fill
+                          className="object-cover object-top"
+                          sizes="768px"
+                        />
+                      </div>
                     ))}
                   </div>
                 </div>
+              )}
 
-                <div className="flex flex-wrap gap-4 pt-4 border-t border-slate-700">
-                  <Link
-                    href={selectedProject.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <Button className="flex items-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white">
-                      <ExternalLink className="h-4 w-4" />
-                      Live Demo
-                    </Button>
-                  </Link>
-                  <Link
-                    href={selectedProject.github}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <Button
-                      variant="outline"
-                      className="flex items-center gap-2 border-slate-600 text-slate-300 hover:bg-slate-700"
+              {(selected.link || selected.docs || selected.github) && (
+                <div className="mt-8 flex flex-wrap gap-4 border-t border-border pt-6">
+                  {selected.link && (
+                    <Link
+                      href={selected.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 bg-signal px-5 py-3 font-mono text-xs uppercase tracking-[0.16em] text-ink"
                     >
-                      <Github className="h-4 w-4" />
-                      View Code
-                    </Button>
-                  </Link>
+                      <ExternalLink className="h-4 w-4" /> Live demo
+                    </Link>
+                  )}
+                  {selected.docs && (
+                    <Link
+                      href={selected.docs}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 bg-signal px-5 py-3 font-mono text-xs uppercase tracking-[0.16em] text-ink"
+                    >
+                      <FileText className="h-4 w-4" /> API docs
+                    </Link>
+                  )}
+                  {selected.github && (
+                    <Link
+                      href={selected.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 border border-border px-5 py-3 font-mono text-xs uppercase tracking-[0.16em] text-bone hover:border-bone"
+                    >
+                      <Github className="h-4 w-4" /> Source
+                    </Link>
+                  )}
                 </div>
-              </div>
+              )}
             </div>
           </DialogContent>
         )}

@@ -1,62 +1,54 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
-import Link from "next/link"
-import { Github, Linkedin, Twitter } from "lucide-react"
+import Link from "next/link";
+import { Github, Linkedin, ArrowUp } from "lucide-react";
+import { PROFILE } from "@/constants";
 
 export default function Footer() {
+  const year = 2026;
   return (
-    <footer className="py-8 px-4 md:px-6 border-t">
-      <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
-          className="mb-4 md:mb-0"
-        >
-          <p className="text-sm text-muted-foreground">
-            &copy; {new Date().getFullYear()} Nesru Codex. All rights reserved.
+    <footer className="border-t border-border px-5 py-10 md:px-10">
+      <div className="mx-auto flex max-w-6xl flex-col gap-6 md:flex-row md:items-center md:justify-between">
+        <div className="flex items-center gap-3">
+          <span className="grid h-8 w-8 place-items-center border border-bone/40 font-mono text-sm font-bold text-bone">
+            NG
+          </span>
+          <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-bone-dim">
+            © {year} {PROFILE.name} · {PROFILE.handle}
           </p>
-        </motion.div>
+        </div>
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="flex space-x-4"
-        >
-          <Link href="https://github.com/nesrucodex" target="_blank" rel="noopener noreferrer">
-            <motion.div
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              className="p-2 rounded-full bg-muted hover:bg-primary hover:text-primary-foreground transition-colors duration-300"
-            >
-              <Github className="h-5 w-5" />
-              <span className="sr-only">GitHub</span>
-            </motion.div>
+        <div className="flex items-center gap-5">
+          <Link
+            href={PROFILE.github}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-bone-muted transition-colors hover:text-signal"
+            aria-label="GitHub"
+          >
+            <Github className="h-5 w-5" />
           </Link>
-          <Link href="#" target="_blank" rel="noopener noreferrer">
-            <motion.div
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              className="p-2 rounded-full bg-muted hover:bg-primary hover:text-primary-foreground transition-colors duration-300"
-            >
-              <Linkedin className="h-5 w-5" />
-              <span className="sr-only">LinkedIn</span>
-            </motion.div>
+          <Link
+            href={PROFILE.linkedin}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-bone-muted transition-colors hover:text-signal"
+            aria-label="LinkedIn"
+          >
+            <Linkedin className="h-5 w-5" />
           </Link>
-          <Link href="#" target="_blank" rel="noopener noreferrer">
-            <motion.div
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              className="p-2 rounded-full bg-muted hover:bg-primary hover:text-primary-foreground transition-colors duration-300"
-            >
-              <Twitter className="h-5 w-5" />
-              <span className="sr-only">Twitter</span>
-            </motion.div>
+          <Link
+            href="#top"
+            className="ml-2 inline-flex items-center gap-1.5 border border-border px-3 py-2 font-mono text-[11px] uppercase tracking-[0.16em] text-bone-muted transition-colors hover:border-bone hover:text-bone"
+          >
+            Top <ArrowUp className="h-3.5 w-3.5" />
           </Link>
-        </motion.div>
+        </div>
       </div>
+
+      <p className="mx-auto mt-8 max-w-6xl font-mono text-[10px] uppercase tracking-[0.2em] text-bone-dim/60">
+        Designed &amp; built by Nesredin · Next.js · Tailwind · Framer Motion
+      </p>
     </footer>
-  )
+  );
 }

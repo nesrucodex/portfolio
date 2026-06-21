@@ -1,164 +1,147 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Menu, X, Github, Moon, Sun } from "lucide-react"
-import { usePathname } from "next/navigation"
-import { cn } from "@/lib/utils"
-import { useTheme } from "next-themes"
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { AnimatePresence, motion } from "framer-motion";
+import { Menu, X, ArrowUpRight, Download } from "lucide-react";
+import { PROFILE } from "@/constants";
+import LocalClock from "@/components/local-clock";
+
+const LINKS = [
+  { label: "Work", href: "#work", num: "01" },
+  { label: "Disciplines", href: "#disciplines", num: "02" },
+  { label: "Stack", href: "#stack", num: "03" },
+  { label: "Contact", href: "#contact", num: "04" },
+];
 
 export default function Nav() {
-  const [isOpen, setIsOpen] = useState(false)
-  const [scrolled, setScrolled] = useState(false)
-  const pathname = usePathname()
-  const { theme, setTheme } = useTheme()
-
-  const navItems = [
-    { name: "Home", href: "#" },
-    { name: "Projects", href: "#projects" },
-    { name: "About", href: "#about" },
-    { name: "Contact", href: "#contact" },
-  ]
+  const [scrolled, setScrolled] = useState(false);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window?.scrollY > 20)
-    }
-
-    window?.addEventListener("scroll", handleScroll)
-    return () => window?.removeEventListener("scroll", handleScroll)
-  }, [])
-
-  const toggleTheme = () => {
-    setTheme(theme === "dark" ? "light" : "dark")
-  }
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
-    <motion.header
-      className={cn(
-        "fixed top-0 w-full z-50 transition-all duration-300",
-        scrolled ? "bg-background/80 backdrop-blur-md shadow-sm" : "bg-transparent",
-      )}
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.5 }}
-    >
-      <div className="max-w-7xl mx-auto px-4 md:px-6">
-        <div className="flex h-16 items-center justify-between">
-          <Link href="/" className="font-bold text-xl group">
-            <span className="inline-block transition-transform duration-300 group-hover:scale-110">Nesru</span>
-            <span className="text-primary inline-block transition-transform duration-300 group-hover:rotate-6">
-              Codex
+    <>
+      <header
+        className={`animate-rise fixed inset-x-0 top-0 z-50 transition-colors duration-300 ${
+          scrolled
+            ? "border-b border-border bg-ink/80 backdrop-blur-md"
+            : "border-b border-transparent"
+        }`}
+      >
+        <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4 md:px-10">
+          {/* Logo */}
+          <Link href="#top" className="group flex items-center gap-3">
+            <span className="grid h-8 w-8 place-items-center border border-bone/40 font-mono text-sm font-bold text-bone transition-colors group-hover:border-signal group-hover:text-signal">
+              NG
             </span>
-            <span className="text-primary text-xs align-super ml-1 animate-pulse">_</span>
+            <span className="hidden font-mono text-xs uppercase tracking-[0.2em] text-bone-muted sm:block">
+              {PROFILE.handle}
+            </span>
           </Link>
 
-          <nav className="hidden md:flex items-center space-x-1">
-            {navItems.map((item, index) => (
+          {/* Desktop links */}
+          <div className="hidden items-center gap-8 md:flex">
+            <LocalClock className="hidden font-mono text-[11px] uppercase tracking-[0.18em] text-bone-dim lg:inline-block" />
+            {LINKS.map((l) => (
               <Link
-                key={item.name}
-                href={item.href}
-                className={cn(
-                  "relative px-4 py-2 text-sm font-medium transition-colors hover:text-primary group",
-                  pathname === item.href ? "text-primary" : "text-muted-foreground",
-                )}
+                key={l.href}
+                href={l.href}
+                className="group font-mono text-xs uppercase tracking-[0.18em] text-bone-muted transition-colors hover:text-bone"
               >
-                {item.name}
-                <span className="absolute inset-x-0 bottom-0 h-0.5 bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
+                <span className="link-underline pb-0.5">{l.label}</span>
               </Link>
             ))}
-
-            <div className="ml-2 flex items-center gap-2">
-              <button
-                onClick={toggleTheme}
-                className="p-2 rounded-full hover:bg-muted transition-colors duration-300"
-                aria-label="Toggle theme"
-              >
-                {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-              </button>
-
-              <Link href="https://github.com/nesrucodex" target="_blank" rel="noopener noreferrer">
-                <Button variant="outline" size="sm" className="group">
-                  <Github className="mr-2 h-4 w-4 group-hover:rotate-12 transition-transform duration-300" />
-                  GitHub
-                </Button>
-              </Link>
-            </div>
-          </nav>
-
-          <div className="flex items-center md:hidden gap-2">
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded-full hover:bg-muted transition-colors duration-300"
-              aria-label="Toggle theme"
+            <a
+              href={PROFILE.resume}
+              download={PROFILE.resumeFile}
+              className="group inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-[0.18em] text-bone-muted transition-colors hover:text-signal"
             >
-              {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-            </button>
-
-            <button
-              className="p-2 rounded-full hover:bg-muted transition-colors duration-300"
-              onClick={() => setIsOpen(!isOpen)}
-              aria-label="Toggle menu"
+              <Download className="h-3.5 w-3.5" /> CV
+            </a>
+            <a
+              href={`mailto:${PROFILE.email}`}
+              className="group inline-flex items-center gap-1.5 border border-signal bg-signal/10 px-4 py-2 font-mono text-xs uppercase tracking-[0.18em] text-signal transition-colors hover:bg-signal hover:text-ink"
             >
-              {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </button>
+              Hire me
+              <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            </a>
           </div>
-        </div>
-      </div>
 
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3 }}
-            className="md:hidden bg-background/95 backdrop-blur-md border-b"
+          {/* Mobile toggle */}
+          <button
+            onClick={() => setOpen(true)}
+            className="grid h-9 w-9 place-items-center border border-border text-bone md:hidden"
+            aria-label="Open menu"
           >
-            <div className="px-4 py-4 space-y-4">
-              {navItems.map((item, index) => (
+            <Menu className="h-5 w-5" />
+          </button>
+        </nav>
+      </header>
+
+      {/* Mobile menu */}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[60] flex flex-col bg-ink/[0.97] backdrop-blur-xl md:hidden"
+          >
+            <div className="flex items-center justify-between px-5 py-4">
+              <span className="font-mono text-xs uppercase tracking-[0.2em] text-bone-muted">
+                {PROFILE.handle}
+              </span>
+              <button
+                onClick={() => setOpen(false)}
+                className="grid h-9 w-9 place-items-center border border-border text-bone"
+                aria-label="Close menu"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="flex flex-1 flex-col justify-center gap-2 px-6">
+              {LINKS.map((l, i) => (
                 <motion.div
-                  key={item.name}
-                  initial={{ opacity: 0, x: -10 }}
+                  key={l.href}
+                  initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.1 }}
+                  transition={{ delay: 0.05 * i }}
                 >
                   <Link
-                    href={item.href}
-                    className={cn(
-                      "block py-2 text-sm font-medium transition-colors hover:text-primary",
-                      pathname === item.href ? "text-primary" : "text-muted-foreground",
-                    )}
-                    onClick={() => setIsOpen(false)}
+                    href={l.href}
+                    onClick={() => setOpen(false)}
+                    className="flex items-baseline gap-4 border-b border-border py-5"
                   >
-                    {item.name}
+                    <span className="font-mono text-sm text-signal">{l.num}</span>
+                    <span className="display text-4xl text-bone">{l.label}</span>
                   </Link>
                 </motion.div>
               ))}
-
-              <motion.div
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: navItems.length * 0.1 }}
-                className="pt-2"
+              <a
+                href={PROFILE.resume}
+                download={PROFILE.resumeFile}
+                onClick={() => setOpen(false)}
+                className="mt-8 inline-flex items-center justify-center gap-2 border border-border px-4 py-4 font-mono text-sm uppercase tracking-[0.18em] text-bone"
               >
-                <Link
-                  href="https://github.com/nesrucodex"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center space-x-2 text-sm font-medium"
-                  onClick={() => setIsOpen(false)}
-                >
-                  <Github className="h-4 w-4" />
-                  <span>GitHub Profile</span>
-                </Link>
-              </motion.div>
+                <Download className="h-4 w-4" /> Download résumé
+              </a>
+              <a
+                href={`mailto:${PROFILE.email}`}
+                onClick={() => setOpen(false)}
+                className="mt-3 inline-flex items-center justify-center gap-2 border border-signal bg-signal px-4 py-4 font-mono text-sm uppercase tracking-[0.18em] text-ink"
+              >
+                Hire me <ArrowUpRight className="h-4 w-4" />
+              </a>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.header>
-  )
+    </>
+  );
 }
