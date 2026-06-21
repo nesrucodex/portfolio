@@ -4,6 +4,13 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
+  motion,
+  useMotionValue,
+  useSpring,
+  useVelocity,
+  useTransform,
+} from "framer-motion";
+import {
   Dialog,
   DialogContent,
   DialogHeader,
@@ -16,21 +23,10 @@ import {
   ExternalLink,
   FileText,
   Lock,
+  Eye,
 } from "lucide-react";
 import { PROJECTS, REPOS, type Project } from "@/constants";
 import Corners from "@/components/corners";
-
-// Bento span config keyed by project id (mobile spans + lg bento spans)
-const SPAN: Record<number, string> = {
-  5: "col-span-2 row-span-2 lg:col-span-4 lg:row-span-2", // Aatma (feature)
-  0: "col-span-2 row-span-2 lg:col-span-2 lg:row-span-2", // EaseTenant
-  1: "col-span-2 row-span-2 lg:col-span-2 lg:row-span-2", // Endubis (contain)
-  2: "col-span-1 row-span-1 lg:col-span-2 lg:row-span-1", // Shengo
-  3: "col-span-1 row-span-1 lg:col-span-2 lg:row-span-2", // SoundRig
-  4: "col-span-2 row-span-1 lg:col-span-2 lg:row-span-1", // TaptoSign
-  6: "col-span-1 row-span-1 lg:col-span-3 lg:row-span-1", // Game Server
-  7: "col-span-1 row-span-1 lg:col-span-3 lg:row-span-1", // Parking
-};
 
 function ProjectImage({ project }: { project: Project }) {
   if (!project.image) {
@@ -49,8 +45,8 @@ function ProjectImage({ project }: { project: Project }) {
           src={project.image}
           alt={project.title}
           fill
-          className="object-contain p-4 transition-transform duration-500 group-hover:scale-[1.03]"
-          sizes="(max-width: 1024px) 100vw, 33vw"
+          className="object-contain p-3"
+          sizes="360px"
         />
       </div>
     );
@@ -60,14 +56,23 @@ function ProjectImage({ project }: { project: Project }) {
       src={project.image}
       alt={project.title}
       fill
-      className="object-cover object-top transition-transform duration-700 ease-out group-hover:scale-[1.05]"
-      sizes="(max-width: 1024px) 100vw, 50vw"
+      className="object-cover object-top"
+      sizes="360px"
     />
   );
 }
 
 export default function Projects() {
   const [selected, setSelected] = useState<Project | null>(null);
+  const [active, setActive] = useState<Project | null>(null);
+
+  // Cursor-following preview
+  const mx = useMotionValue(0);
+  const my = useMotionValue(0);
+  const sx = useSpring(mx, { stiffness: 350, damping: 32, mass: 0.6 });
+  const sy = useSpring(my, { stiffness: 350, damping: 32, mass: 0.6 });
+  const vx = useVelocity(sx);
+  const rotate = useTransform(vx, [-1200, 1200], [-9, 9], { clamp: true });
 
   return (
     <section
@@ -76,6 +81,7 @@ export default function Projects() {
     >
       <div className="relative mx-auto max-w-6xl">
         <Corners />
+
         <div className="mb-12 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <div className="reveal">
             <span className="eyebrow">01 / Selected work</span>
@@ -84,73 +90,71 @@ export default function Projects() {
             </h2>
           </div>
           <p className="reveal max-w-sm text-sm leading-relaxed text-bone-muted">
-            Production systems I designed, built and shipped: fintech on Cardano,
-            city-scale transit, real-time platforms and the automation behind
-            them. Tap any tile for the full breakdown.
+            Production systems I designed, built and shipped. Hover a project to
+            preview it, click for the full breakdown.
           </p>
         </div>
 
-        {/* Bento grid */}
-        <div className="grid grid-flow-row-dense auto-rows-[150px] grid-cols-2 gap-3 sm:gap-4 md:auto-rows-[180px] lg:auto-rows-[210px] lg:grid-cols-6">
-          {PROJECTS.map((p) => {
-            const big = (SPAN[p.id] ?? "").includes("lg:row-span-2");
-            const showDesc = big && p.fit !== "contain";
-            return (
-              <button
-                key={p.id}
-                onClick={() => setSelected(p)}
-                className={`reveal group relative flex flex-col justify-end overflow-hidden border border-border bg-ink text-left transition-colors duration-300 hover:border-signal/50 ${
-                  SPAN[p.id] ?? "col-span-2 lg:col-span-2"
-                }`}
-              >
-                <ProjectImage project={p} />
-
-                {/* Legibility gradient */}
-                <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/45 to-transparent transition-opacity duration-300 group-hover:from-ink" />
-
-                {/* Top row: tags + arrow */}
-                <div className="absolute inset-x-0 top-0 flex items-start justify-between p-3 md:p-4">
-                  <div className="flex flex-wrap gap-1.5">
-                    {p.tags.slice(0, big ? 3 : 1).map((t) => (
-                      <span
-                        key={t}
-                        className="bg-ink/70 px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.12em] text-mint backdrop-blur-sm md:text-[10px]"
-                      >
-                        {t}
-                      </span>
-                    ))}
-                  </div>
-                  <span className="grid h-7 w-7 flex-shrink-0 translate-y-0 place-items-center bg-signal/0 text-bone-muted transition-all duration-300 group-hover:bg-signal group-hover:text-ink md:h-8 md:w-8">
-                    <ArrowUpRight className="h-4 w-4" />
-                  </span>
-                </div>
-
-                {/* Bottom: title + meta */}
-                <div className="relative z-10 p-4 md:p-5">
-                  <div className="flex items-baseline justify-between gap-2">
-                    <h3
-                      className={`display text-bone transition-colors duration-300 group-hover:text-signal ${
-                        big ? "text-2xl md:text-3xl" : "text-lg md:text-xl"
-                      }`}
-                    >
-                      {p.title}
-                    </h3>
-                    <span className="flex-shrink-0 font-mono text-[10px] text-bone-dim">
-                      {p.year}
-                    </span>
-                  </div>
-                  <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.14em] text-signal/90 md:text-[11px]">
-                    {p.role}
+        {/* Project cards */}
+        <div
+          className="reveal grid gap-px border border-border bg-border md:grid-cols-2"
+          onMouseMove={(e) => {
+            mx.set(e.clientX);
+            my.set(e.clientY);
+          }}
+          onMouseLeave={() => setActive(null)}
+        >
+          {PROJECTS.map((p) => (
+            <button
+              key={p.id}
+              onClick={() => setSelected(p)}
+              onMouseEnter={() => setActive(p)}
+              className="group relative flex flex-col bg-ink p-7 text-left transition-colors duration-300 hover:bg-ink-100 md:p-8"
+            >
+              <div className="flex items-start justify-between gap-4">
+                <div className="min-w-0">
+                  <h3 className="display text-2xl text-bone transition-colors duration-300 group-hover:text-signal md:text-3xl">
+                    {p.title}
+                  </h3>
+                  <p className="mt-1 font-mono text-[11px] uppercase tracking-[0.16em] text-signal/90">
+                    {p.role} · {p.year}
                   </p>
-                  {showDesc && (
-                    <p className="mt-3 hidden max-w-md text-xs leading-relaxed text-bone-muted md:block">
-                      {p.description}
-                    </p>
-                  )}
                 </div>
-              </button>
-            );
-          })}
+                <ArrowUpRight className="h-5 w-5 flex-shrink-0 text-bone-dim transition-all duration-300 group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-signal" />
+              </div>
+
+              <p className="mt-4 flex-1 text-sm leading-relaxed text-bone-muted">
+                {p.description}
+              </p>
+
+              <div className="mt-5 flex flex-wrap gap-1.5">
+                {p.techStack.slice(0, 5).map((t) => (
+                  <span
+                    key={t}
+                    className="border border-border px-2 py-0.5 font-mono text-[10px] text-bone-dim"
+                  >
+                    {t}
+                  </span>
+                ))}
+              </div>
+
+              <div className="mt-5 flex items-center gap-2 border-t border-border/60 pt-4">
+                {p.tags.slice(0, 3).map((t) => (
+                  <span
+                    key={t}
+                    className="font-mono text-[10px] uppercase tracking-[0.12em] text-bone-dim"
+                  >
+                    #{t.toLowerCase()}
+                  </span>
+                ))}
+                {p.note && (
+                  <span className="ml-auto inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-[0.1em] text-mint">
+                    <Lock className="h-3 w-3" /> private
+                  </span>
+                )}
+              </div>
+            </button>
+          ))}
         </div>
 
         {/* More on GitHub */}
@@ -192,6 +196,28 @@ export default function Projects() {
           </div>
         </div>
       </div>
+
+      {/* Cursor-following preview (desktop / hover devices only) */}
+      <motion.div
+        aria-hidden
+        className="pointer-events-none fixed left-0 top-0 z-40 hidden h-52 w-80 origin-center md:block"
+        style={{ left: sx, top: sy, x: 28, y: -110, rotate }}
+        animate={{ opacity: active ? 1 : 0, scale: active ? 1 : 0.85 }}
+        transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+      >
+        <div className="relative h-full w-full overflow-hidden border border-signal/40 bg-ink shadow-[0_20px_60px_-15px_rgba(0,0,0,0.8)]">
+          {active && <ProjectImage project={active} />}
+          <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/10 to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 flex items-center justify-between p-3">
+            <span className="font-display text-sm font-bold text-bone">
+              {active?.title}
+            </span>
+            <span className="inline-flex items-center gap-1 bg-signal px-2 py-1 font-mono text-[9px] uppercase tracking-[0.12em] text-ink">
+              <Eye className="h-3 w-3" /> view
+            </span>
+          </div>
+        </div>
+      </motion.div>
 
       {/* Detail dialog */}
       <Dialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
