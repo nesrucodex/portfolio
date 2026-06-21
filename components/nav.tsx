@@ -5,7 +5,6 @@ import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X, ArrowUpRight, Download } from "lucide-react";
 import { PROFILE } from "@/constants";
-import LocalClock from "@/components/local-clock";
 
 const LINKS = [
   { label: "Work", href: "#work", num: "01" },
@@ -34,20 +33,9 @@ export default function Nav() {
             : "border-b border-transparent"
         }`}
       >
-        <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4 md:px-10">
-          {/* Logo */}
-          <Link href="#top" className="group flex items-center gap-3">
-            <span className="grid h-8 w-8 place-items-center border border-bone/40 font-mono text-sm font-bold text-bone transition-colors group-hover:border-signal group-hover:text-signal">
-              NG
-            </span>
-            <span className="hidden font-mono text-xs uppercase tracking-[0.2em] text-bone-muted sm:block">
-              {PROFILE.handle}
-            </span>
-          </Link>
-
-          {/* Desktop links */}
+        <nav className="relative mx-auto flex max-w-6xl items-center justify-center px-5 py-4 md:px-10">
+          {/* Desktop links (centered) */}
           <div className="hidden items-center gap-8 md:flex">
-            <LocalClock className="hidden font-mono text-[11px] uppercase tracking-[0.18em] text-bone-dim lg:inline-block" />
             {LINKS.map((l) => (
               <Link
                 key={l.href}
@@ -76,7 +64,7 @@ export default function Nav() {
           {/* Mobile toggle */}
           <button
             onClick={() => setOpen(true)}
-            className="grid h-9 w-9 place-items-center border border-border text-bone md:hidden"
+            className="absolute right-5 grid h-9 w-9 place-items-center border border-border text-bone md:hidden"
             aria-label="Open menu"
           >
             <Menu className="h-5 w-5" />
@@ -93,10 +81,7 @@ export default function Nav() {
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-[60] flex flex-col bg-ink/[0.97] backdrop-blur-xl md:hidden"
           >
-            <div className="flex items-center justify-between px-5 py-4">
-              <span className="font-mono text-xs uppercase tracking-[0.2em] text-bone-muted">
-                {PROFILE.handle}
-              </span>
+            <div className="flex items-center justify-end px-5 py-4">
               <button
                 onClick={() => setOpen(false)}
                 className="grid h-9 w-9 place-items-center border border-border text-bone"

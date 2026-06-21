@@ -3,9 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowDownRight, Github, MapPin, Download } from "lucide-react";
+import { ArrowDownRight, Github, Download } from "lucide-react";
 import { PROFILE, DISCIPLINES } from "@/constants";
-import LocalClock from "@/components/local-clock";
 import Corners from "@/components/corners";
 
 const ROLES = PROFILE.roles;
@@ -32,7 +31,6 @@ export default function Hero() {
       </div>
 
       <div className="relative z-10 mx-auto grid w-full max-w-6xl grid-cols-1 gap-12 px-5 md:px-10 lg:grid-cols-[1.4fr_1fr] lg:items-center">
-        <Corners />
         {/* Left, statement */}
         <div>
           <div className="animate-rise mb-7 flex flex-wrap items-center gap-x-5 gap-y-2">
@@ -43,10 +41,6 @@ export default function Hero() {
               </span>
               {PROFILE.availability}
             </span>
-            <span className="inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-[0.2em] text-bone-muted">
-              <MapPin className="h-3.5 w-3.5" /> {PROFILE.location}
-            </span>
-            <LocalClock className="font-mono text-xs uppercase tracking-[0.2em] text-bone-dim" />
           </div>
 
           <h1

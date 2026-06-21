@@ -4,6 +4,7 @@ import ASSETS from "@/utils/assets";
 import { PROFILE, STATS, EXPERIENCE, STACK_GROUPS } from "@/constants";
 import Corners from "@/components/corners";
 import Counter from "@/components/counter";
+import GithubStats from "@/components/github-stats";
 
 export default function About() {
   return (
@@ -94,6 +95,9 @@ export default function About() {
             </div>
           </div>
         </div>
+
+        {/* GitHub activity */}
+        <GithubStats />
 
         {/* Experience */}
         <div className="mt-24">

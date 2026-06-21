@@ -1,4 +1,7 @@
+import type { StaticImageData } from "next/image";
 import ASSETS from "@/utils/assets";
+
+export type ImageSrc = string | StaticImageData;
 
 export const PROFILE = {
   name: "Nesredin Getahun",
@@ -14,6 +17,25 @@ export const PROFILE = {
   availability: "Open to freelance & full-time roles",
   resume: "/Nesredin-Getahun-Resume.pdf",
   resumeFile: "Nesredin-Getahun-Resume.pdf",
+};
+
+// GitHub snapshot (Jun 2026). Refresh by re-running the fetch and updating here.
+export const GITHUB = {
+  username: "nesrucodex",
+  url: "https://github.com/nesrucodex",
+  contributionsLastYear: 1196,
+  publicRepos: 39,
+  memberSince: 2024,
+  snapshot: "Jun 2026",
+  languages: [
+    { name: "TypeScript", pct: 62 },
+    { name: "JavaScript", pct: 24 },
+    { name: "Go", pct: 7 },
+    { name: "Python", pct: 7 },
+  ],
+  // 365 daily contribution levels (0-4), oldest to newest
+  levels:
+    "00111000000000000000000010100000001001111000001000000011010100111000001111011000101011010001011000111101011110110110011101011111111100011111111100000010110110011011111111101100122110111112001013110110311021110100241001343320010100000110020000111111100002002000011100002000000011000110010011111002111101110000000000000011110110000111111101100010100111111111111111111",
 };
 
 export const STATS = [
@@ -175,9 +197,9 @@ export type Project = {
   role: string;
   tags: string[];
   description: string;
-  image: string;
+  image: ImageSrc;
   fit?: "cover" | "contain";
-  gallery?: string[];
+  gallery?: ImageSrc[];
   techStack: string[];
   link?: string;
   github?: string;
@@ -196,7 +218,7 @@ export const PROJECTS: Project[] = [
     tags: ["Backend", "Platform", "Fintech"],
     description:
       "Architected the backend for a city-scale transit platform, 15+ domain modules (vehicles, terminals, routing, wallet, payroll, payment distribution) behind a versioned, OpenAPI-documented REST API.",
-    image: ASSETS.IMAGES.AATMA,
+    image: ASSETS.IMAGES.AATMA_DASHBOARD,
     gallery: [ASSETS.IMAGES.AATMA_DOCS],
     techStack: ["TypeScript", "Nest.js", "PostgreSQL", "Prisma", "REST", "JWT"],
     docs: "https://aatmabackend.etpay.et/docs",
@@ -308,7 +330,7 @@ export const PROJECTS: Project[] = [
     tags: ["Automation", "Go", "Document AI"],
     description:
       "Automated document signing at scale, PDF pipelines via Go subprocesses + compiled pdf-lib, plus OCR training workflows and Redis-backed sessions.",
-    image: "",
+    image: ASSETS.IMAGES.TAPTOSIGN,
     techStack: ["Go (Golang)", "Preact", "Redis", "pdf-lib", "OCR"],
     link: "https://taptosign.com",
     github: "https://github.com/nesrucodex",
@@ -329,17 +351,18 @@ export const PROJECTS: Project[] = [
     role: "Backend · Realtime",
     tags: ["Realtime", "Backend", "Infra"],
     description:
-      "Built the realtime control plane for a game backend, secure session auth, live monitoring and server operations tooling.",
-    image: ASSETS.IMAGES.GAME_SERVER,
+      "Built the realtime control plane for a game backend: shops, markets, games and bets with live money-flow, house-profit and RTP analytics by game type.",
+    image: ASSETS.IMAGES.GAME_DASHBOARD,
     techStack: ["TypeScript", "Node.js", "WebSocket", "Redis", "JWT"],
-    note: "Private, live demo available on request",
+    note: "Private admin, live demo on request",
     longDescription:
-      "A control panel for operating a real-time game backend. It provides a secure, session-based admin sign-in (24-hour sessions), and tooling to manage and monitor live server operations. The admin surface is intentionally private; happy to walk through it on request.",
+      "The admin control plane for a real-time gaming backend. It tracks shops, markets, games and bets across the platform, with a money-flow view (total stake, paid out, house profit) and realised RTP analytics broken down by game type against target. Built on a secure, session-based admin layer over a realtime Node backend.",
     features: [
+      "Platform overview: shops, markets, games and live bets",
+      "Money flow: total stake, paid out and house profit",
+      "Realised RTP analytics by game type vs target",
       "Secure session-based admin authentication",
-      "Real-time game server operations",
-      "Session lifecycle management (24h)",
-      "Operator-facing control panel",
+      "Realtime monitoring over a Node + WebSocket backend",
     ],
   },
   {

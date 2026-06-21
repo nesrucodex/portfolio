@@ -3,9 +3,10 @@ import ENDUBIS_V2 from "@/public/images/endubis.png";
 import SOUNDRIG from "@/public/images/soundRig.png";
 import SHENGO from "@/public/images/shengo.png";
 import EASETENANT from "@/public/images/ease-tenant.png";
-import AATMA from "@/public/images/aatma.png";
+import AATMA_DASHBOARD from "@/public/images/aatma-dashboard.png";
 import AATMA_DOCS from "@/public/images/aatma-docs.png";
-import GAME_SERVER from "@/public/images/game-server.png";
+import GAME_DASHBOARD from "@/public/images/game-dashboard.png";
+import TAPTOSIGN from "@/public/images/taptosign.png";
 
 export const ASSETS = {
   IMAGES: {
@@ -14,9 +15,10 @@ export const ASSETS = {
     SOUNDRIG,
     SHENGO,
     EASETENANT,
-    AATMA,
+    AATMA_DASHBOARD,
     AATMA_DOCS,
-    GAME_SERVER,
+    GAME_DASHBOARD,
+    TAPTOSIGN,
   },
 };
 
